@@ -10,7 +10,7 @@
 
 databases:
   - name: wwa-postgres
-    plan: starter
+    plan: basic-256mb
     databaseName: directus
     user: directus
 
