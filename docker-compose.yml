@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - directus_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: directus
+      POSTGRES_PASSWORD: directus
+      POSTGRES_DB: directus
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U directus -d directus"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  directus:
+    image: directus/directus:11.3.5
+    restart: unless-stopped
+    ports:
+      - "8055:8055"
+    volumes:
+      - directus_uploads:/directus/uploads
+      - ./directus:/directus/directus-config
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SECRET: ${DIRECTUS_SECRET:-change-me-in-production}
+      DB_CLIENT: pg
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: directus
+      DB_USER: directus
+      DB_PASSWORD: directus
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL:-admin@caritas-zuerich.ch}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD:-DirectusAdmin2026!}
+      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-http://localhost:8055}
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000,true}
+      WEBSOCKETS_ENABLED: "true"
+      ADMIN_TOKEN: ${DIRECTUS_TOKEN:-wwa-local-dev-token-change-in-production}
+
+volumes:
+  directus_data:
+  directus_uploads:

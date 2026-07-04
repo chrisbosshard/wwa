@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@elements/*": ["./components/Elements/*"],
+      "@context/*": ["./components/Context/*"],
+      "@layout/*": ["./components/Layout/*"],
+      "@sections/*": ["./components/Sections/*"],
+      "@graphics/*": ["./components/Graphics/*"],
+      "@scripts/*": ["./utils/scripts/*"],
+      "@prompts/*": ["./utils/prompts/*"],
+      "@queries/*": ["./utils/queries/*"],
+      "@validations/*": ["./utils/validations/*"],
+      "@utils/*": ["./utils/*"],
+      "@data/*": ["./data/*"],
+      "@lib/*": ["./lib/*"]
+    },
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "incremental": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve"
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

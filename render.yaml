@@ -1,0 +1,67 @@
+# One-click deploy for the online CMS (Directus + PostgreSQL)
+# https://render.com/docs/blueprint-spec
+#
+# After deploy:
+#   1. Open https://YOUR-SERVICE.onrender.com/admin
+#   2. Log in with DIRECTUS_ADMIN_EMAIL / DIRECTUS_ADMIN_PASSWORD
+#   3. From your machine: DIRECTUS_URL=https://YOUR-SERVICE.onrender.com npm run directus:setup
+#   4. DIRECTUS_URL=... npm run directus:roles && npm run directus:seed
+#   5. npm run directus:create-editor -- --email volunteer@...
+
+databases:
+  - name: wwa-postgres
+    plan: starter
+    databaseName: directus
+    user: directus
+
+services:
+  - type: web
+    name: wwa-directus
+    plan: starter
+    runtime: image
+    image:
+      url: docker.io/directus/directus:11.3.5
+    healthCheckPath: /server/health
+    disk:
+      name: directus-uploads
+      mountPath: /directus/uploads
+      sizeGB: 1
+    envVars:
+      - key: SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@caritas-zuerich.ch
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: DB_CLIENT
+        value: pg
+      - key: DB_HOST
+        fromDatabase:
+          name: wwa-postgres
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: wwa-postgres
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: wwa-postgres
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: wwa-postgres
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: wwa-postgres
+          property: password
+      - key: PUBLIC_URL
+        sync: false
+      - key: CORS_ENABLED
+        value: "true"
+      - key: CORS_ORIGIN
+        value: "true"
+      - key: WEBSOCKETS_ENABLED
+        value: "true"
+      - key: ADMIN_TOKEN
+        generateValue: true
