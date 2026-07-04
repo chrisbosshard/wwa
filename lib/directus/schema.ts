@@ -4,7 +4,44 @@ export type ApplicationState =
   | "waitinglist"
   | "post_registration"
   | "wish_fulfilment"
-  | "closed";
+  | "closed"
+  | "done";
+
+export type CampaignContentState = ApplicationState;
+
+export type ProgressValueSource = "completed_kids" | "registered_kids" | "fixed" | null;
+
+export type ButtonStyle = "primary" | "outline";
+
+export interface CampaignContent {
+  id?: string;
+  state: CampaignContentState;
+  show_page_title?: boolean;
+  page_title?: string | null;
+  lead?: string | null;
+  body?: string | null;
+  show_progress?: boolean;
+  progress_title?: string | null;
+  progress_max?: number | null;
+  progress_value_source?: ProgressValueSource;
+  progress_fixed_value?: number | null;
+  button_1_label?: string | null;
+  button_1_url?: string | null;
+  button_1_external?: boolean;
+  button_1_style?: ButtonStyle | null;
+  button_2_label?: string | null;
+  button_2_url?: string | null;
+  button_2_external?: boolean;
+  button_2_style?: ButtonStyle | null;
+  button_3_label?: string | null;
+  button_3_url?: string | null;
+  button_3_external?: boolean;
+  button_3_style?: ButtonStyle | null;
+}
+
+export interface Application {
+  state: ApplicationState;
+}
 
 export interface DirectusFile {
   id: string;
@@ -78,10 +115,6 @@ export interface Kid {
   wish?: Wish | string | null;
   family?: Family | string | null;
   donor?: Donor | string | null;
-}
-
-export interface Application {
-  state: ApplicationState;
 }
 
 export interface Page {

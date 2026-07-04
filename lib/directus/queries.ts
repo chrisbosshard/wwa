@@ -1,13 +1,14 @@
 // @ts-nocheck
 import {
   createDirectusClient,
+  requestDirectus,
   readItems,
   readSingleton,
   createItem,
   updateItem,
 } from "./client";
 import { mapKid, mapWish } from "./transform";
-import type { LegacyKid, LegacyKidsConnection, LegacyWishesResponse } from "./schema";
+import type { LegacyKid, LegacyKidsConnection, LegacyWishesResponse, Category } from "./schema";
 
 const KID_FIELDS = [
   "*",
@@ -20,8 +21,60 @@ const KID_FIELDS = [
 ];
 
 export async function fetchApplication() {
-  const client = createDirectusClient();
-  return client.request(readSingleton("application", { fields: ["state"] }));
+  return requestDirectus((client) =>
+    client.request(readSingleton("application", { fields: ["state"] }))
+  );
+}
+
+const CAMPAIGN_CONTENT_FIELDS = [
+  "id",
+  "state",
+  "show_page_title",
+  "page_title",
+  "lead",
+  "body",
+  "show_progress",
+  "progress_title",
+  "progress_max",
+  "progress_value_source",
+  "progress_fixed_value",
+  "button_1_label",
+  "button_1_url",
+  "button_1_external",
+  "button_1_style",
+  "button_2_label",
+  "button_2_url",
+  "button_2_external",
+  "button_2_style",
+  "button_3_label",
+  "button_3_url",
+  "button_3_external",
+  "button_3_style",
+] as const;
+
+export async function fetchCampaignContent() {
+  return requestDirectus((client) =>
+    client.request(
+      readItems("campaign_content", {
+        fields: [...CAMPAIGN_CONTENT_FIELDS],
+        sort: ["state"],
+        limit: 20,
+      })
+    )
+  );
+}
+
+export async function fetchCampaignContentByState(state: string) {
+  return requestDirectus(async (client) => {
+    const items = await client.request(
+      readItems("campaign_content", {
+        fields: [...CAMPAIGN_CONTENT_FIELDS],
+        filter: { state: { _eq: state } } as Record<string, unknown>,
+        limit: 1,
+      })
+    );
+    return items[0] ?? null;
+  });
 }
 
 export async function fetchGlobalSettings() {
@@ -30,18 +83,19 @@ export async function fetchGlobalSettings() {
 }
 
 export async function fetchKidsPage(after: number, time: string, limit = 1000): Promise<LegacyKidsConnection> {
-  const client = createDirectusClient();
-  const items = await client.request(
-    readItems("kid", {
-      filter: {
-        active: { _eq: true },
-        date_created: { _gt: time },
-      } as Record<string, unknown>,
-      fields: KID_FIELDS,
-      sort: ["-id"],
-      limit,
-      offset: after,
-    })
+  const items = await requestDirectus((client) =>
+    client.request(
+      readItems("kid", {
+        filter: {
+          active: { _eq: true },
+          date_created: { _gt: time },
+        } as Record<string, unknown>,
+        fields: KID_FIELDS,
+        sort: ["-id"],
+        limit,
+        offset: after,
+      })
+    )
   );
 
   const mapped = items.map(mapKid);
@@ -74,26 +128,36 @@ export async function fetchAllKids(time: string): Promise<LegacyKid[]> {
 }
 
 export async function fetchWishes(): Promise<LegacyWishesResponse> {
-  const client = createDirectusClient();
-  const [wishes, categories] = await Promise.all([
+  const items = await requestDirectus((client) =>
     client.request(
       readItems("wish", {
         filter: { active: { _eq: true } },
         fields: ["*", "image.*", "category.*"],
         limit: 1000,
       })
-    ),
-    client.request(
-      readItems("category", {
-        fields: ["id", "name", "wishes.id"],
-        limit: 100,
-      })
-    ),
-  ]);
+    )
+  );
+
+  const wishes = items.map((w) => mapWish(w)).filter(Boolean) as LegacyWishesResponse["wishes"];
+  const categoriesById = new Map<string, Category>();
+
+  for (const wish of items) {
+    if (!wish.category || typeof wish.category === "string") continue;
+    const existing = categoriesById.get(String(wish.category.id));
+    if (existing) {
+      existing.wishes!.push({ id: String(wish.id) });
+      continue;
+    }
+    categoriesById.set(String(wish.category.id), {
+      id: String(wish.category.id),
+      name: wish.category.name,
+      wishes: [{ id: String(wish.id) }],
+    });
+  }
 
   return {
-    wishes: wishes.map((w) => mapWish(w)).filter(Boolean) as LegacyWishesResponse["wishes"],
-    categories: categories as LegacyWishesResponse["categories"],
+    wishes,
+    categories: Array.from(categoriesById.values()),
   };
 }
 

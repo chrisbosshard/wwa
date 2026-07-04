@@ -1,0 +1,215 @@
+/* Festive homepage hero — separate from Tailwind bundle to avoid dev HMR issues */
+.titlePane {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  z-index: 0;
+  border-top: 1px solid #89999f;
+  padding-top: 2rem;
+  background-color: #182b3f;
+}
+
+.titlePane-title {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  width: calc(100% - 0rem);
+  max-width: 400px;
+  margin-top: 150px;
+  padding: 0 0 1.5rem;
+  cursor: pointer;
+}
+
+.titlePane-foreground {
+  position: relative;
+  z-index: 300;
+}
+
+.titlePane-with-cutout,
+.titlePane-with-actions {
+  padding-bottom: 16rem;
+}
+
+.titlePane-with-cutout .overlay-bottom,
+.titlePane-with-actions .overlay-bottom {
+  display: none;
+}
+
+.titlePane-with-cutout .overlay-actions,
+.titlePane-with-actions .overlay-actions {
+  background-image: linear-gradient(to bottom, rgba(24, 43, 63, 0), rgba(24, 43, 63, 0.65) 40%, rgba(24, 43, 63, 0.95) 70%, rgba(24, 43, 63, 1));
+  height: 75%;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.titlePane-with-cutout::after,
+.titlePane-with-actions::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 16rem;
+  background: linear-gradient(
+    90deg,
+    #fff 0,
+    #fff calc(50% + 37.5rem),
+    transparent calc(50% + 37.5rem),
+    transparent
+  );
+  z-index: 200;
+  pointer-events: none;
+}
+
+.titlePane-subpage.titlePane-with-cutout {
+  padding-bottom: 18rem;
+}
+
+.titlePane-subpage .titlePane-title {
+  padding-bottom: 4rem;
+}
+
+.titlePane-title img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.titlePane > img {
+  max-width: none;
+  width: auto;
+  height: auto;
+}
+
+.overlay-top {
+  background-image: linear-gradient(to top, rgba(24, 43, 63, 0), rgba(24, 43, 63, 1));
+  height: 100px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.overlay-bottom {
+  background-image: linear-gradient(to bottom, rgba(24, 43, 63, 0), rgba(24, 43, 63, 0.8), rgba(24, 43, 63, 1));
+  height: 300px;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.titlePane-actions {
+  position: relative;
+}
+
+.animated-stars {
+  animation: heroStarFade 10s infinite;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url("/stars.png");
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.swingimage {
+  transform-origin: 50% 0;
+  animation: heroSwinging 3.5s ease-in-out infinite;
+  position: absolute;
+  z-index: 2;
+}
+
+.swingimageback {
+  transform-origin: 50% 0;
+  animation: heroSwingingBack 3.5s ease-in-out infinite;
+  position: absolute;
+  z-index: 2;
+}
+
+.lantern1 { left: calc(50% - 980px); top: 0; }
+.lantern2 { left: calc(50% - 950px); top: 0; }
+.lantern3 { left: calc(50% - 910px); top: 0; }
+.lantern4 { left: calc(50% - 780px); top: -30px; }
+.lantern5 { left: calc(50% - 780px); top: -60px; }
+.lantern6 { left: calc(50% - 750px); top: -30px; }
+.lantern7 { left: calc(50% - 730px); top: -50px; }
+.lantern8 { left: calc(50% - 705px); top: -20px; }
+.lantern9 { left: calc(50% - 660px); top: 0; }
+.lantern10 { left: calc(50% - 630px); top: 0; z-index: 0; }
+.lantern11 { left: calc(50% - 540px); top: 0; }
+.lantern12 { left: calc(50% - 460px); top: -100px; z-index: 3; }
+.lantern13 { left: calc(50% - 465px); top: 0; }
+.lantern14 { left: calc(50% - 375px); top: 0; }
+.lantern15 { left: calc(50% - 340px); top: -80px; }
+.lantern16 { left: calc(50% - 290px); top: -100px; }
+.lantern17 { left: calc(50% - 750px); top: -40px; }
+.lantern18 { left: calc(50% - 600px); top: -70px; }
+.lantern19 { left: calc(50% - 930px); top: -100px; }
+.lantern20 { right: calc(50% - 180px); top: -100px; z-index: 0; }
+.lantern21 { right: calc(50% - 300px); top: -80px; }
+.lantern22 { right: calc(50% - 430px); top: -100px; }
+.lantern23 { right: calc(50% - 430px); top: -50px; }
+.lantern24 { right: calc(50% - 560px); top: -40px; z-index: 3; }
+.lantern25 { right: calc(50% - 590px); top: 0; }
+.lantern26 { right: calc(50% - 610px); top: -20px; }
+.lantern27 { right: calc(50% - 650px); top: 0; }
+.lantern28 { right: calc(50% - 670px); top: -70px; }
+.lantern29 { right: calc(50% - 730px); top: 0; z-index: 1; }
+.lantern30 { right: calc(50% - 735px); top: -20px; z-index: 1; }
+.lantern31 { right: calc(50% - 830px); top: -50px; z-index: 3; }
+.lantern32 { right: calc(50% - 850px); top: 0; }
+.lantern33 { right: calc(50% - 870px); top: 0; }
+.lantern34 { right: calc(50% - 870px); top: 0; }
+.lantern35 { right: calc(50% - 955px); top: 0; z-index: 1; }
+.lantern36 { right: calc(50% - 1050px); top: -70px; }
+.lantern37 { right: calc(50% - 990px); top: 0; z-index: 1; }
+
+@media only screen and (max-width: 600px) {
+  .titlePane-title {
+    margin-top: 4rem;
+    margin-bottom: 0.5rem;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .titlePane-subpage .titlePane-title {
+    padding-bottom: 2.5rem;
+  }
+
+  .titlePane-title img {
+    width: 70%;
+  }
+}
+
+@keyframes heroSwinging {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(-1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes heroSwingingBack {
+  0% { transform: rotate(-1deg); }
+  50% { transform: rotate(0deg); }
+  100% { transform: rotate(-1deg); }
+}
+
+@keyframes heroStarFade {
+  0% { filter: grayscale(100%); opacity: 1; }
+  50% { filter: grayscale(0%); opacity: 0.2; }
+  100% { filter: grayscale(100%); opacity: 1; }
+}

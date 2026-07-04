@@ -1,42 +1,31 @@
-// TYPES
 type Props = {
-  className?: string;
   title: string;
   value: number;
   max: number;
   date: string;
+  align?: "left" | "center";
 };
 
-// *****************************************************
-// IMAGE LINK COMPONENT
-// *****************************************************
-export const Progress = (props: Props) => {
-  // PROPS
-  const { title, value, date, max } = props;
-
-  // CALCULATE
+export const Progress = ({ title, value, date, max, align = "center" }: Props) => {
   const percentage = Math.min(Math.floor((value / max) * 100), 100);
+  const displayValue = Math.min(value, max);
+  const alignClass = align === "left" ? "text-left" : "text-center";
 
-  const showValue = percentage < 10 ? "" : Math.min(value, max);
-
-  // *****************************************************
-
-  // RENDER
   return (
-    <div className="mb-8 w-full text-center">
-      <p className="mb-1 mt-0 text-lg font-semibold text-white">{title}</p>
-      <p className="mb-4 text-sm font-normal text-gold-300">{date}</p>
-      <div className="m-auto w-full rounded-4xl border-4 border-gold-300 lg:w-[500px]">
+    <div className={`mx-auto mb-10 max-w-[560px] ${alignClass} ${align === "left" ? "mr-auto ml-0" : ""}`}>
+      <p className="text-lg font-semibold text-caritas-gray-800">{title}</p>
+      <p className="mt-1 text-sm text-[#666]">{date}</p>
+      <div className="mt-4 h-8 overflow-hidden rounded-full bg-gray-200">
         <div
-          className="mx-1 my-1 flex h-10 items-center justify-end rounded-4xl bg-gold-300 pr-4"
-          style={{
-            maxWidth: "calc(50px + " + 1 + " * 440px)",
-            width: "calc(" + percentage + "% - 8px)",
-          }}
+          className="flex h-full items-center justify-end rounded-full bg-caritas-red pr-3 text-sm font-bold text-white transition-all duration-500"
+          style={{ width: `${percentage}%` }}
         >
-          <p className="text-xl font-bold text-darkblue-300">{showValue}</p>
+          {percentage >= 12 ? displayValue : null}
         </div>
       </div>
+      <p className="mt-2 text-sm text-[#666]">
+        {displayValue} von {max} ({percentage}%)
+      </p>
     </div>
   );
 };

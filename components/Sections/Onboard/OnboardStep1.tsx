@@ -13,7 +13,6 @@ import axios from "axios";
 import { Field } from "@elements/TextField/TextField";
 import { Error } from "@elements/TextField/Error";
 import { Button } from "@elements/Button/Button";
-import { Button as MuiButton } from "@mui/material";
 
 type FormData = z.infer<typeof step1Schema>;
 

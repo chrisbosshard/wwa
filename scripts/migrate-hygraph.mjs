@@ -4,7 +4,9 @@
  *
  * Usage: npm run migrate:hygraph
  */
-import "dotenv/config";
+import { config } from "dotenv";
+config({ path: ".env.local" });
+config();
 
 const HYGRAPH_URL = process.env.HYGRAPH_URL;
 const HYGRAPH_TOKEN = process.env.HYGRAPH_TOKEN;
@@ -49,14 +51,23 @@ async function directus(token, method, path, body) {
   return res.status === 204 ? null : res.json();
 }
 
-async function importAsset(token, url) {
+async function importAsset(token, url, mimeType) {
   if (!url) return null;
   try {
     const res = await fetch(url);
+    if (!res.ok) return null;
     const buffer = await res.arrayBuffer();
+    const extByMime = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+      "image/gif": "gif",
+    };
+    const contentType = mimeType || res.headers.get("content-type") || "application/octet-stream";
+    const baseName = url.split("/").pop()?.split("?")[0] || "asset";
+    const filename = baseName.includes(".") ? baseName : `${baseName}.${extByMime[contentType] || "jpg"}`;
     const form = new FormData();
-    const filename = url.split("/").pop()?.split("?")[0] || "asset.jpg";
-    form.append("file", new Blob([buffer]), filename);
+    form.append("file", new Blob([buffer], { type: contentType }), filename);
     const uploadRes = await fetch(`${DIRECTUS_URL}/files`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
@@ -71,6 +82,71 @@ async function importAsset(token, url) {
 }
 
 const idMap = { category: {}, wish: {}, family: {}, donor: {}, kid: {} };
+
+async function fixM2ORelations(token) {
+  const relations = [
+    { collection: "wish", field: "category", related: "category", oneField: "wishes" },
+    { collection: "wish", field: "image", related: "directus_files" },
+    { collection: "kid", field: "family", related: "family", oneField: "kids" },
+    { collection: "kid", field: "wish", related: "wish", oneField: "kids" },
+    { collection: "kid", field: "donor", related: "donor", oneField: "kids" },
+    { collection: "family", field: "image", related: "directus_files" },
+    { collection: "donor", field: "logo", related: "directus_files" },
+  ];
+
+  console.log("Ensuring Directus relations are configured...");
+  for (const { collection, field, related, oneField } of relations) {
+    let exists = false;
+    try {
+      const relation = await directus(token, "GET", `/relations/${collection}/${field}`);
+      exists = Boolean(relation?.data?.related_collection);
+    } catch {
+      exists = false;
+    }
+    if (exists) continue;
+
+    await directus(token, "POST", "/relations", {
+      collection,
+      field,
+      related_collection: related,
+      meta: oneField ? { one_field: oneField } : undefined,
+      schema: { on_delete: "SET NULL" },
+    });
+    console.log(`  ✓ ${collection}.${field} → ${related}`);
+  }
+}
+
+async function fixWishFields(token) {
+  console.log("Ensuring wish.link supports long URLs...");
+  try {
+    await directus(token, "DELETE", "/fields/wish/link");
+  } catch {
+    // field may not exist
+  }
+  await directus(token, "POST", "/fields/wish", {
+    field: "link",
+    type: "text",
+    meta: { interface: "input-multiline" },
+  });
+}
+
+async function clearPartialMigration(token) {
+  const { data: categories } = await directus(token, "GET", "/items/category?limit=-1&fields=id");
+  let wishes = [];
+  try {
+    ({ data: wishes } = await directus(token, "GET", "/items/wish?limit=-1&fields=id"));
+  } catch {
+    wishes = [];
+  }
+  if (categories?.length) {
+    console.log(`Clearing ${categories.length} categories from partial migration...`);
+    await directus(token, "DELETE", "/items/category", categories.map((c) => c.id));
+  }
+  if (wishes?.length) {
+    console.log(`Clearing ${wishes.length} wishes from partial migration...`);
+    await directus(token, "DELETE", "/items/wish", wishes.map((w) => w.id));
+  }
+}
 
 async function migrateCategories(token) {
   const { categories } = await hygraph(`query { categories { id name } }`);
@@ -88,13 +164,13 @@ async function migrateWishes(token) {
     const { wishes } = await hygraph(
       `query($skip: Int!) { wishes(first: 100, skip: $skip) {
         id description ageRange active code link article voucher year individual toCheck
-        image { url } category { id }
+        image { url mimeType } category { id }
       }}`,
       { skip }
     );
     if (!wishes?.length) break;
     for (const w of wishes) {
-      const imageId = await importAsset(token, w.image?.url);
+      const imageId = await importAsset(token, w.image?.url, w.image?.mimeType);
       const { data } = await directus(token, "POST", "/items/wish", {
         description: w.description,
         age_range: w.ageRange,
@@ -102,7 +178,7 @@ async function migrateWishes(token) {
         code: w.code,
         link: w.link,
         article: w.article,
-        voucher: w.voucher,
+        voucher: w.voucher === true || w.voucher === "true",
         year: w.year,
         individual: w.individual,
         to_check: w.toCheck,
@@ -209,6 +285,9 @@ async function migrateFamiliesAndKids(token) {
         wish: kid.wish ? idMap.wish[kid.wish.id] : null,
         donor: kid.donor ? idMap.donor[kid.donor.id] : null,
       });
+      if (kid.createdAt) {
+        await directus(token, "PATCH", `/items/kid/${newKid.id}`, { date_created: kid.createdAt });
+      }
       idMap.kid[kid.id] = newKid.id;
       kidTotal++;
     }
@@ -228,6 +307,10 @@ async function main() {
 
   console.log("Logging in to Directus...");
   const token = await directusLogin();
+
+  await fixM2ORelations(token);
+  await fixWishFields(token);
+  await clearPartialMigration(token);
 
   await migrateCategories(token);
   await migrateWishes(token);

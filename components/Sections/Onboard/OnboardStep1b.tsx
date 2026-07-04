@@ -6,8 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { step1aSchema } from "@validations/register";
-import CircularProgress from "@mui/material/CircularProgress";
-import { Button as MuiButton } from "@mui/material";
+import { Loader2 } from "lucide-react";
+import { Button as UiButton } from "@/components/ui/button";
 
 // CUSTOM COMPONENTS
 import { Field } from "@elements/TextField/TextField";
@@ -72,20 +72,22 @@ const OnBoardStep1 = (props) => {
       <form onSubmit={handleSubmit(checkEntries)} className="w-full">
         <div className="m-auto flex w-full max-w-2xl flex-col gap-3">
           <div className="relative flex items-center justify-end">
-            <Field disabled="true" label={label} {...register("image")} className="text-gold-300" />
-            <MuiButton variant="contained" component="label" className="absolute mr-4">
-              {!loading ? (
-                <>
-                  Bild hochladen
-                  <input type="file" hidden onChange={handleFileUpload} />
-                </>
-              ) : (
-                <>
-                  Ladet
-                  <CircularProgress size="1rem" className="ml-2 text-gold-300" />
-                </>
-              )}
-            </MuiButton>
+            <Field disabled={true} label={label} {...register("image")} className="text-gold-300" />
+            <UiButton asChild className="absolute mr-4">
+              <label className="cursor-pointer">
+                {!loading ? (
+                  <>
+                    Bild hochladen
+                    <input type="file" hidden onChange={handleFileUpload} />
+                  </>
+                ) : (
+                  <>
+                    Ladet
+                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                  </>
+                )}
+              </label>
+            </UiButton>
           </div>
           <Error errors={errors} type="image" />
           <Field label="Email*" {...register("email")} />

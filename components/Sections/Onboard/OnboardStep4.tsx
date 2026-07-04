@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 
 // IMPORT COMPONENTS
-import WarningIcon from "@mui/icons-material/Warning";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";

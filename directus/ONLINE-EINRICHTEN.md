@@ -21,6 +21,7 @@ export DIRECTUS_ADMIN_PASSWORD=<aus Render Dashboard>
 
 npm run directus:setup
 npm run directus:roles
+npm run directus:campaign-content
 npm run seed:cms
 npm run directus:create-editor -- --email redakteur@caritas-zuerich.ch --first-name Vorname
 ```

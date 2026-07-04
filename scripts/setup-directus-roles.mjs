@@ -1,17 +1,32 @@
 /**
  * Creates the "Redakteur" role with permissions for non-developer volunteers.
- * Uses DIRECTUS_TOKEN (admin static token) or admin login.
+ * Directus 11+: permissions are attached to policies, not roles directly.
  *
  * Usage: npm run directus:roles
  */
-import "dotenv/config";
+import { config } from "dotenv";
+config({ path: ".env.local" });
+config();
 
 const DIRECTUS_URL = process.env.DIRECTUS_URL || "http://localhost:8055";
 const ADMIN_EMAIL = process.env.DIRECTUS_ADMIN_EMAIL || "admin@caritas-zuerich.ch";
 const ADMIN_PASSWORD = process.env.DIRECTUS_ADMIN_PASSWORD || "DirectusAdmin2026!";
 
-const EDITOR_COLLECTIONS = ["page", "sponsor", "global_setting", "wish", "category", "application"];
-const ACTIONS = ["create", "read", "update", "delete"];
+const EDITOR_COLLECTIONS = ["page", "sponsor", "global_setting", "wish", "category", "application", "campaign_content"];
+const PUBLIC_READ_COLLECTIONS = [
+  "application",
+  "campaign_content",
+  "global_setting",
+  "page",
+  "sponsor",
+  "wish",
+  "category",
+  "kid",
+  "family",
+  "donor",
+  "directus_files",
+];
+const EDITOR_ACTIONS = ["create", "read", "update", "delete"];
 
 async function getToken() {
   const res = await fetch(`${DIRECTUS_URL}/auth/login`, {
@@ -37,6 +52,38 @@ async function api(token, method, path, body) {
   return text ? JSON.parse(text) : null;
 }
 
+async function getPublicPolicyId(token) {
+  const result = await api(token, "GET", "/policies?fields=id,name,icon&limit=100");
+  const policy =
+    result?.data?.find((p) => p.icon === "public") ||
+    result?.data?.find((p) => /public/i.test(p.name || ""));
+  if (!policy) throw new Error("Public policy not found");
+  return policy.id;
+}
+
+async function getOrCreateEditorPolicy(token, roleId) {
+  const result = await api(token, "GET", "/policies?fields=id,name&limit=100");
+  let policy = result?.data?.find((p) => p.name === "Redakteur");
+  if (!policy) {
+    const created = await api(token, "POST", "/policies", {
+      name: "Redakteur",
+      icon: "edit",
+      description: "Freiwillige: Texte, Wünsche, Partner und Kampagnenstatus bearbeiten",
+      app_access: true,
+      admin_access: false,
+    });
+    policy = created.data;
+  }
+
+  const access = await api(token, "GET", `/access?filter[role][_eq]=${roleId}&fields=id,policy`);
+  const linked = access?.data?.some((entry) => entry.policy === policy.id);
+  if (!linked) {
+    await api(token, "POST", "/access", { role: roleId, policy: policy.id });
+  }
+
+  return policy.id;
+}
+
 async function getOrCreateRole(token) {
   const result = await api(token, "GET", "/roles?fields=id,name&limit=100");
   const existing = result?.data?.find((r) => r.name === "Redakteur");
@@ -46,33 +93,49 @@ async function getOrCreateRole(token) {
     name: "Redakteur",
     icon: "edit",
     description: "Freiwillige: Texte, Wünsche, Partner und Kampagnenstatus bearbeiten",
-    app_access: true,
-    admin_access: false,
   });
   return created.data.id;
 }
 
-async function setPermission(token, roleId, collection, action) {
+async function permissionExists(token, policyId, collection, action) {
+  const result = await api(
+    token,
+    "GET",
+    `/permissions?filter[policy][_eq]=${policyId}&filter[collection][_eq]=${collection}&filter[action][_eq]=${action}&fields=id&limit=1`
+  );
+  return Boolean(result?.data?.length);
+}
+
+async function setPolicyPermission(token, policyId, collection, action) {
+  if (await permissionExists(token, policyId, collection, action)) return;
   await api(token, "POST", "/permissions", {
-    role: roleId,
+    policy: policyId,
     collection,
     action,
     fields: ["*"],
     permissions: {},
     validation: {},
-  }).catch(() => null);
+  });
 }
 
 async function main() {
-  console.log(`Setting up Redakteur role on ${DIRECTUS_URL}...`);
+  console.log(`Setting up roles and policies on ${DIRECTUS_URL}...`);
   const token = await getToken();
   const roleId = await getOrCreateRole(token);
+  const editorPolicyId = await getOrCreateEditorPolicy(token, roleId);
+  const publicPolicyId = await getPublicPolicyId(token);
 
   for (const collection of EDITOR_COLLECTIONS) {
-    for (const action of ACTIONS) {
-      await setPermission(token, roleId, collection, action);
+    for (const action of EDITOR_ACTIONS) {
+      await setPolicyPermission(token, editorPolicyId, collection, action);
     }
-    console.log(`  ✓ ${collection}`);
+    console.log(`  ✓ Redakteur ${collection}`);
+  }
+
+  console.log("\nSetting up Public read access...");
+  for (const collection of PUBLIC_READ_COLLECTIONS) {
+    await setPolicyPermission(token, publicPolicyId, collection, "read");
+    console.log(`  ✓ public read ${collection}`);
   }
 
   console.log("\nRedakteur role ready.");

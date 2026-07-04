@@ -2,18 +2,45 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@elements/*": ["./components/Elements/*"],
-      "@context/*": ["./components/Context/*"],
-      "@layout/*": ["./components/Layout/*"],
-      "@sections/*": ["./components/Sections/*"],
-      "@graphics/*": ["./components/Graphics/*"],
-      "@scripts/*": ["./utils/scripts/*"],
-      "@prompts/*": ["./utils/prompts/*"],
-      "@queries/*": ["./utils/queries/*"],
-      "@validations/*": ["./utils/validations/*"],
-      "@utils/*": ["./utils/*"],
-      "@data/*": ["./data/*"],
-      "@lib/*": ["./lib/*"]
+      "@/*": [
+        "./*"
+      ],
+      "@elements/*": [
+        "./components/Elements/*"
+      ],
+      "@context/*": [
+        "./components/Context/*"
+      ],
+      "@layout/*": [
+        "./components/Layout/*"
+      ],
+      "@sections/*": [
+        "./components/Sections/*"
+      ],
+      "@graphics/*": [
+        "./components/Graphics/*"
+      ],
+      "@scripts/*": [
+        "./utils/scripts/*"
+      ],
+      "@prompts/*": [
+        "./utils/prompts/*"
+      ],
+      "@queries/*": [
+        "./utils/queries/*"
+      ],
+      "@validations/*": [
+        "./utils/validations/*"
+      ],
+      "@utils/*": [
+        "./utils/*"
+      ],
+      "@data/*": [
+        "./data/*"
+      ],
+      "@lib/*": [
+        "./lib/*"
+      ]
     },
     "lib": [
       "dom",
@@ -31,12 +58,19 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "target": "ES2017",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

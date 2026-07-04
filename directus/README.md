@@ -22,6 +22,9 @@ npm run migrate:hygraph
 # 5. Seed CMS pages and sponsors from hardcoded content
 npm run seed:cms
 
+# 5b. Seed homepage texts per campaign state (if collection already exists)
+npm run seed:campaign-content
+
 # 6. Create volunteer role and user (for sharing with non-developers)
 npm run directus:roles
 npm run directus:create-editor -- --email redakteur@example.com --first-name Max
@@ -34,7 +37,7 @@ Deploy `docker-compose.yml` to Railway, Fly.io, or Azure Container Apps with man
 1. Set strong `DIRECTUS_SECRET`, `ADMIN_PASSWORD`, and `PUBLIC_URL`
 2. Run `npm run directus:setup` against the production Directus URL
 3. Create API tokens in Directus Admin → Settings → Access Tokens:
-   - **Public read token** — read-only on wishes, categories, pages, sponsors, global_setting, application.state
+   - **Public read token** — read-only on wishes, categories, pages, sponsors, global_setting, application.state, campaign_content
    - **App token** — full CRUD for kid, family, donor (used by Next.js API routes only)
 4. Set `DIRECTUS_TOKEN` in Next.js hosting env (never expose to browser)
 
@@ -42,8 +45,8 @@ Deploy `docker-compose.yml` to Railway, Fly.io, or Azure Container Apps with man
 
 | Role | Collections |
 |------|-------------|
-| Editor | page, sponsor, global_setting, wish, category (read/write) |
-| Coordinator | wish, category, application, kid (status fields only) |
+| Editor | page, sponsor, global_setting, wish, category, campaign_content (read/write) |
+| Coordinator | wish, category, application, campaign_content, kid (status fields only) |
 | Admin | All collections |
 
 Field-level permissions: hide family email/phone/street and donor address from Editor role.

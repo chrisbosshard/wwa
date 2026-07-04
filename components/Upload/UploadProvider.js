@@ -1,8 +1,7 @@
 import React from "react";
-import styles from "../../styles/Crypto.module.css";
 import { useCSVReader } from "react-papaparse";
 import { createWish } from "@lib/directus/api-client";
-import Button from "@mui/material/Button";
+import { Button } from "@/components/ui/button";
 
 const UploadProvider = () => {
   const { CSVReader } = useCSVReader();
@@ -23,12 +22,12 @@ const UploadProvider = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className="p-8">
       <CSVReader onUploadAccepted={(results) => handleOnFileLoad(results.data)}>
         {({ getRootFileInputProps, getRootProps, ProgressBar }) => (
           <>
             <div {...getRootProps()}>
-              <Button variant="contained">Upload CSV</Button>
+              <Button>Upload CSV</Button>
               <input {...getRootFileInputProps()} />
             </div>
             <ProgressBar />

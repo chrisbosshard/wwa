@@ -8,7 +8,7 @@ import * as z from "zod";
 import { step2Schema } from "@validations/register";
 
 // IMPORT COMPONENTS
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import { CircleMinus } from "lucide-react";
 import { Field } from "@elements/TextField/TextField";
 import { Error } from "@elements/TextField/Error";
 import { Button } from "@elements/Button/Button";
@@ -105,7 +105,7 @@ const OnboardStep2 = (props) => {
                     </div>
                   </div>
                   <div className="kid-icons">
-                    <RemoveCircleIcon fontSize="large" className="kid-remover" onClick={() => removeKid(index)} />
+                    <CircleMinus className="h-8 w-8 cursor-pointer text-gold-300 hover:text-white" onClick={() => removeKid(index)} />
                   </div>
                 </div>
               );

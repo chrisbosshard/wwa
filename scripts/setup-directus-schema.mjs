@@ -37,9 +37,41 @@ async function api(token, path, method = "GET", body) {
 async function createCollection(token, name, meta = {}) {
   return api(token, "/collections", "POST", {
     collection: name,
-    meta: { icon: meta.icon || "box", singleton: meta.singleton || false, ...meta },
+    meta: {
+      icon: meta.icon || "box",
+      singleton: meta.singleton || false,
+      accountability: meta.accountability,
+      ...meta,
+    },
     schema: { name },
   });
+}
+
+async function ensureTimestamps(token, collection) {
+  await api(token, `/collections/${collection}`, "PATCH", {
+    meta: { accountability: "all" },
+  });
+
+  for (const [field, special] of [
+    ["date_created", "date-created"],
+    ["date_updated", "date-updated"],
+  ]) {
+    try {
+      await api(token, `/fields/${collection}/${field}`);
+    } catch {
+      await api(token, `/fields/${collection}`, "POST", {
+        field,
+        type: "timestamp",
+        meta: {
+          special: [special],
+          interface: "datetime",
+          readonly: true,
+          hidden: true,
+          width: "half",
+        },
+      });
+    }
+  }
 }
 
 async function createField(token, collection, field, type, meta = {}) {
@@ -51,18 +83,49 @@ async function createField(token, collection, field, type, meta = {}) {
   });
 }
 
-async function createM2OField(token, collection, field, relatedCollection) {
-  return api(token, `/fields/${collection}`, "POST", {
+async function createM2OField(token, collection, field, relatedCollection, oneField) {
+  try {
+    await api(token, `/fields/${collection}/${field}`);
+  } catch {
+    await api(token, `/fields/${collection}`, "POST", {
+      field,
+      type: "integer",
+      meta: {
+        interface: "select-dropdown-m2o",
+        special: ["m2o"],
+      },
+    });
+  }
+
+  try {
+    const relation = await api(token, `/relations/${collection}/${field}`);
+    if (relation?.data?.related_collection) return;
+  } catch {
+    // relation missing
+  }
+
+  await api(token, "/relations", "POST", {
+    collection,
     field,
-    type: "uuid",
-    meta: {
-      interface: "select-dropdown-m2o",
-      special: ["m2o"],
-    },
-    schema: {
-      foreign_key_table: relatedCollection,
-      foreign_key_column: "id",
-    },
+    related_collection: relatedCollection,
+    meta: oneField ? { one_field: oneField } : undefined,
+    schema: { on_delete: "SET NULL" },
+  });
+}
+
+async function createFileRelation(token, collection, field) {
+  try {
+    const relation = await api(token, `/relations/${collection}/${field}`);
+    if (relation?.data?.related_collection) return;
+  } catch {
+    // relation missing
+  }
+
+  await api(token, "/relations", "POST", {
+    collection,
+    field,
+    related_collection: "directus_files",
+    schema: { on_delete: "SET NULL" },
   });
 }
 
@@ -84,6 +147,18 @@ const APPLICATION_STATES = [
   "post_registration",
   "wish_fulfilment",
   "closed",
+  "done",
+];
+
+const CAMPAIGN_STATE_CHOICES = APPLICATION_STATES.map((s) => ({ text: s, value: s }));
+const PROGRESS_VALUE_SOURCES = [
+  { text: "Erfüllte Wünsche (live)", value: "completed_kids" },
+  { text: "Angemeldete Wünsche (live)", value: "registered_kids" },
+  { text: "Fester Wert", value: "fixed" },
+];
+const BUTTON_STYLES = [
+  { text: "Primär (rot)", value: "primary" },
+  { text: "Outline", value: "outline" },
 ];
 
 async function main() {
@@ -92,6 +167,7 @@ async function main() {
 
   const collections = [
     { name: "application", singleton: true, icon: "flag" },
+    { name: "campaign_content", icon: "home" },
     { name: "global_setting", singleton: true, icon: "settings" },
     { name: "category", icon: "category" },
     { name: "wish", icon: "card_giftcard" },
@@ -107,12 +183,74 @@ async function main() {
     await createCollection(token, col.name, { singleton: col.singleton, icon: col.icon });
   }
 
+  for (const name of ["kid", "family", "donor"]) {
+    console.log(`Enabling timestamps: ${name}`);
+    await ensureTimestamps(token, name);
+  }
+
   // application
   await createField(token, "application", "state", "string", {
     interface: "select-dropdown",
     options: { choices: APPLICATION_STATES.map((s) => ({ text: s, value: s })) },
     schema: { default_value: "pre_registration" },
   });
+
+  // campaign_content — homepage texts per app state
+  await createField(token, "campaign_content", "state", "string", {
+    interface: "select-dropdown",
+    required: true,
+    options: { choices: CAMPAIGN_STATE_CHOICES },
+    schema: { is_unique: true },
+  });
+  await createField(token, "campaign_content", "show_page_title", "boolean", {
+    interface: "boolean",
+    schema: { default_value: true },
+  });
+  await createField(token, "campaign_content", "page_title", "string", {
+    interface: "input",
+    note: "Überschrift im weissen Bereich (z. B. Weihnachtswunschaktion)",
+  });
+  await createField(token, "campaign_content", "lead", "text", {
+    interface: "input-rich-text-html",
+    note: "Haupttext oberhalb des Fortschrittsbalkens",
+  });
+  await createField(token, "campaign_content", "body", "text", {
+    interface: "input-rich-text-html",
+    note: "Zweiter Textblock unter dem Fortschrittsbalken",
+  });
+  await createField(token, "campaign_content", "show_progress", "boolean", {
+    interface: "boolean",
+    schema: { default_value: false },
+  });
+  await createField(token, "campaign_content", "progress_title", "string", { interface: "input" });
+  await createField(token, "campaign_content", "progress_max", "integer", { interface: "input" });
+  await createField(token, "campaign_content", "progress_value_source", "string", {
+    interface: "select-dropdown",
+    options: { choices: PROGRESS_VALUE_SOURCES },
+  });
+  await createField(token, "campaign_content", "progress_fixed_value", "integer", {
+    interface: "input",
+    note: "Nur bei «Fester Wert»",
+  });
+  for (const n of [1, 2, 3]) {
+    await createField(token, "campaign_content", `button_${n}_label`, "string", {
+      interface: "input",
+      note: `Button ${n} — Label (leer lassen zum Ausblenden)`,
+    });
+    await createField(token, "campaign_content", `button_${n}_url`, "string", {
+      interface: "input",
+      note: "Intern (/anmelden) oder externe URL",
+    });
+    await createField(token, "campaign_content", `button_${n}_external`, "boolean", {
+      interface: "boolean",
+      schema: { default_value: false },
+    });
+    await createField(token, "campaign_content", `button_${n}_style`, "string", {
+      interface: "select-dropdown",
+      options: { choices: BUTTON_STYLES },
+      schema: { default_value: "primary" },
+    });
+  }
 
   // global_setting
   for (const f of [
@@ -136,7 +274,7 @@ async function main() {
     ["age_range", "integer", "input"],
     ["active", "boolean", "boolean", { schema: { default_value: true } }],
     ["code", "string", "input"],
-    ["link", "string", "input"],
+    ["link", "text", "input-multiline"],
     ["article", "string", "input"],
     ["voucher", "boolean", "boolean"],
     ["year", "string", "input"],
@@ -146,7 +284,8 @@ async function main() {
     await createField(token, "wish", f[0], f[1], { interface: f[2], ...(f[3] || {}) });
   }
   await createFileField(token, "wish", "image");
-  await createM2OField(token, "wish", "category", "category");
+  await createFileRelation(token, "wish", "image");
+  await createM2OField(token, "wish", "category", "category", "wishes");
 
   // family
   for (const f of [
@@ -160,6 +299,7 @@ async function main() {
     });
   }
   await createFileField(token, "family", "image");
+  await createFileRelation(token, "family", "image");
 
   // kid
   for (const f of [
@@ -171,9 +311,9 @@ async function main() {
       ...(f[2] || {}),
     });
   }
-  await createM2OField(token, "kid", "family", "family");
-  await createM2OField(token, "kid", "wish", "wish");
-  await createM2OField(token, "kid", "donor", "donor");
+  await createM2OField(token, "kid", "family", "family", "kids");
+  await createM2OField(token, "kid", "wish", "wish", "kids");
+  await createM2OField(token, "kid", "donor", "donor", "kids");
 
   // donor
   for (const f of [
@@ -188,6 +328,7 @@ async function main() {
     });
   }
   await createFileField(token, "donor", "logo");
+  await createFileRelation(token, "donor", "logo");
 
   // page
   for (const f of [
@@ -221,6 +362,10 @@ async function main() {
     email: "weihnachtswunsch@caritas-zuerich.ch",
     address: "Caritas Zürich, Beckenhofstrasse 16, 8006 Zürich",
   }).catch(() => null);
+
+  const { seedCampaignContent } = await import("./seed-campaign-content.mjs");
+  console.log("Seeding campaign_content...");
+  await seedCampaignContent(token, (method, path, body) => api(token, path, method, body));
 
   console.log("Schema setup complete.");
 }

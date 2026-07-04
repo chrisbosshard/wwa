@@ -2,17 +2,10 @@
 import React, { useState, useEffect } from "react";
 
 // IMPORT COMPONENTS
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import TextField from "@mui/material/TextField";
-import { styled } from "@mui/system";
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import InputLabel from "@mui/material/InputLabel";
+import { AlertCircle } from "lucide-react";
 import { fetchWishes, createWish } from "@lib/directus/api-client";
-import Grid from "@mui/material/Grid";
-import Wish from "../../../components/Wish/Wish.js";
+import Wish from "../../../components/Wish/Wish";
+import { FilterSelect, AGE_FILTER_OPTIONS } from "@elements/FilterSelect/FilterSelect";
 import emailjs from "@emailjs/browser";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,39 +16,6 @@ import { step3Schema } from "@validations/register";
 import { Field } from "@elements/TextField/TextField";
 import { Error } from "@elements/TextField/Error";
 import { Button } from "@elements/Button/Button";
-
-// OBJECT
-const CssTextField = styled(TextField)({
-  "& label.Mui-focused": {
-    color: "#ebdcbe",
-    fontStyle: "normal",
-  },
-  "& label": {
-    color: "#666968",
-    fontStyle: "italic",
-    fontWeight: "200",
-  },
-  "& .MuiInput-underline:after": {
-    borderBottomColor: "#ebdcbe",
-  },
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "#ebdcbe",
-      color: "#ebdcbe",
-    },
-    "&:hover fieldset": {
-      borderColor: "#ebdcbe",
-      color: "#ebdcbe",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "#ebdcbe",
-      color: "#ebdcbe",
-    },
-  },
-  "&.MuiFormControl-root": {
-    width: "100%",
-  },
-});
 
 type Category = {
   id: string;
@@ -76,9 +36,9 @@ const OnboardStep3 = (props) => {
   const [showNum, setShowNum] = useState(50);
   const [wishes, setWishes] = useState([]);
   const [filteredWishes, setFilteredWishes] = useState([]);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("all");
   const [categories, setCategories] = useState<Category[] | undefined>();
-  const [range, setRange] = useState("");
+  const [range, setRange] = useState("all");
   const [activeKid, setActiveKid] = useState<number>();
   const [customOpen, setCustomOpen] = useState(false);
 
@@ -112,10 +72,10 @@ const OnboardStep3 = (props) => {
   useEffect(() => {
     if (wishes) {
       let newWishes = [...wishes];
-      if (category !== "") {
+      if (category !== "all") {
         newWishes = newWishes.filter((wish) => wish.category && wish.category.id === category);
       }
-      if (range !== "") {
+      if (range !== "all") {
         newWishes = newWishes.filter((wish) => wish.ageRange < range);
       }
       setFilteredWishes(newWishes);
@@ -236,8 +196,8 @@ const OnboardStep3 = (props) => {
         <>
           {!customOpen ? (
             <div className="gift-container">
-              <div className="gift-customMessage">
-                <ErrorOutlineIcon />
+              <div className="gift-customMessage flex items-start gap-3">
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-caritas-gray-800" />
                 <h3>
                   Passt keines der Geschenke aus der Liste? Dann melde dein eigenes Geschenk{" "}
                   <span className="gift-link" onClick={() => setCustomOpen(true)}>
@@ -247,61 +207,27 @@ const OnboardStep3 = (props) => {
                 </h3>
               </div>
               <h2>Wähle ein Geschenk für {kids[activeKid - 1].prename}: </h2>
-              <div className="mb-4 flex w-full flex-1 flex-col gap-4 lg:flex-row">
-                <FormControl variant="outlined" sx={{ minWidth: 120 }} className="flex-1">
-                  <InputLabel id="demo-simple-select-filled-label">Kategorie</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-helper-label"
-                    id="demo-simple-select-helper"
-                    value={category}
-                    label="Kategorie"
-                    onChange={(e) => setCategory(e.target.value)}
-                  >
-                    <MenuItem key="na" value="">
-                      <em>Filter entfernen</em>
-                    </MenuItem>
-                    {categories.map((category, index) => {
-                      return (
-                        <MenuItem key={category.id} value={category.id}>
-                          {category.name}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </FormControl>
-                <FormControl variant="outlined" sx={{ minWidth: 120 }} className="flex-1">
-                  <InputLabel id="demo-simple-select-filled-label">Altersbeschränkung</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-helper-label"
-                    id="demo-simple-select-helper"
-                    value={range}
-                    label="Altersbeschränkung"
-                    onChange={(e) => setRange(e.target.value)}
-                  >
-                    <MenuItem key="na" value="">
-                      <em>Filter entfernen</em>
-                    </MenuItem>
-                    {[...Array(14)].map((i, index) => {
-                      const year = index + 1;
-                      const label = index === 0 ? "Bis 1 Jahr" : "Bis " + year + " Jahre";
-                      return (
-                        <MenuItem key={index} value={year}>
-                          {label}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </FormControl>
+              <div className="mb-4 flex w-full flex-1 flex-col gap-6 sm:flex-row sm:gap-8">
+                <FilterSelect
+                  label="Kategorie"
+                  value={category}
+                  onValueChange={setCategory}
+                  options={(categories ?? []).map((cat) => ({ value: cat.id, label: cat.name }))}
+                  className="w-full flex-1 sm:max-w-[17.5rem]"
+                />
+                <FilterSelect
+                  label="Altersbeschränkung"
+                  value={range}
+                  onValueChange={setRange}
+                  options={AGE_FILTER_OPTIONS}
+                  className="w-full flex-1 sm:max-w-[17.5rem]"
+                />
               </div>
-              <Grid container spacing={3}>
-                {filteredWishes.map((wish, index) => {
-                  return (
-                    <Grid item key={wish.id} xs={12} sm={6} md={4} lg={4}>
-                      <Wish key={index} wish={wish} onSelect={handleSelection} />
-                    </Grid>
-                  );
-                })}
-              </Grid>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredWishes.map((wish, index) => (
+                  <Wish key={wish.id} wish={wish} onSelect={handleSelection} />
+                ))}
+              </div>
 
               <div className="button-container">
                 <div className="link-container">

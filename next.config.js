@@ -1,7 +1,7 @@
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["localhost", "media.graphcms.com", "media.graphassets.com", "eu-central-1.graphassets.com"],
     remotePatterns: [
       {
         protocol: "http",
@@ -14,10 +14,20 @@ module.exports = {
         hostname: "**",
         pathname: "/assets/**",
       },
+      {
+        protocol: "https",
+        hostname: "media.graphcms.com",
+      },
+      {
+        protocol: "https",
+        hostname: "media.graphassets.com",
+      },
+      {
+        protocol: "https",
+        hostname: "eu-central-1.graphassets.com",
+      },
     ],
   },
-  experimental: {
-    workerThreads: false,
-    cpus: 1,
-  },
 };
+
+module.exports = nextConfig;

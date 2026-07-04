@@ -1,0 +1,394 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 96%;
+    --foreground: 0 0% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+    --primary: 354 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 20%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 354 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 354 100% 50%;
+    --radius: 0.5rem;
+    --header-height-mobile: 3.75rem;
+    --header-height-desktop: 6.875rem;
+    --header-height-desktop-collapsed: 4.125rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-[#F5F5F5] text-[#333333] antialiased;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@layer components {
+  .inline-link {
+    @apply cursor-pointer font-semibold text-caritas-red underline hover:text-caritas-red-dark;
+  }
+
+  .link {
+    @apply cursor-pointer font-semibold text-caritas-red hover:underline;
+  }
+
+  .link-container {
+    @apply inline-flex cursor-pointer items-center text-sm font-semibold text-caritas-red hover:underline;
+  }
+
+  .button-container {
+    @apply mt-6 flex flex-wrap items-center gap-4;
+  }
+
+  .gift-container {
+    @apply rounded-lg border border-gray-200 bg-white p-6;
+  }
+
+  .gift-customMessage {
+    @apply mb-6 rounded-md bg-caritas-gray-50 p-4;
+  }
+
+  .gift-link {
+    @apply cursor-pointer font-semibold text-caritas-red hover:underline;
+  }
+
+  .cms-body p {
+    @apply mb-4 leading-relaxed text-[#444];
+  }
+
+  .sponsor-grid {
+    @apply grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] items-center gap-6;
+  }
+
+  .main-cutout {
+    @apply relative z-10 -mt-[16rem];
+  }
+
+  .main-cutout::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 100vw;
+    margin-left: -50vw;
+    top: 7rem;
+    bottom: 0;
+    background: #fff;
+    z-index: 0;
+  }
+
+  .main-cutout-inner {
+    @apply relative z-[1] mx-auto max-w-[77rem] px-4 md:px-8;
+  }
+
+  .main-cutout-overlap {
+    @apply relative pt-8 md:pt-10;
+  }
+
+  .subpage-corner-icon-anchor {
+    position: absolute;
+    top: 7rem;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .subpage-corner-icon-anchor .main-cutout-inner {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .subpage-corner-icon {
+    width: clamp(4.25rem, 9vw, 7rem);
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+  }
+
+  .main-cutout--with-icon .main-cutout-heading,
+  .main-cutout--with-icon .subpage-lead {
+    padding-right: clamp(4.5rem, 10vw, 7.5rem);
+  }
+
+  .main-cutout-body {
+    @apply relative z-[1] pb-10 pt-2 md:pb-12;
+  }
+
+  .main-cutout-heading {
+    @apply mb-6 text-[2rem] font-bold leading-tight text-[#333333] md:mb-8 md:text-[2.5rem] md:leading-[1.15];
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .main-cutout-lead {
+    /* Caritas regio uses html 62.5% + .h4 at 2.2rem → 22px (25px on very wide screens) */
+    @apply mb-0 max-w-none text-[1.375rem] font-normal leading-[1.6] tracking-[0.0375rem] text-[#242424] xl:text-[1.5625rem];
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .main-cutout-text {
+    @apply mb-0 max-w-3xl text-base leading-[1.65] text-[#444444];
+  }
+
+  .main-cutout-lead.cms-body p,
+  .main-cutout-lead.cms-body strong {
+    @apply mb-0 text-inherit;
+    font-size: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+  }
+
+  .main-cutout-lead.cms-body strong {
+    @apply font-medium;
+  }
+
+  .main-cutout-text.cms-body p {
+    @apply mb-0;
+  }
+
+  .main-cutout-lead.cms-body p + p,
+  .main-cutout-text.cms-body p + p {
+    @apply mt-4;
+  }
+
+  .main-cutout-cta {
+    @apply mt-8 flex flex-wrap items-center justify-center gap-4 md:mt-10;
+  }
+
+  .main-cutout-cta--progress {
+    @apply mx-auto w-full max-w-4xl;
+  }
+
+  .main-cutout-cta + .main-cutout-progress,
+  .main-cutout-lead + .main-cutout-progress {
+    @apply mt-8 md:mt-10;
+  }
+
+  .main-cutout-progress + .main-cutout-text,
+  .main-cutout-lead + .main-cutout-text {
+    @apply mt-8 md:mt-10;
+  }
+
+  .main-cutout-text + .main-cutout-cta {
+    @apply mt-8 md:mt-10;
+  }
+
+  .main-cutout-cta:last-child,
+  .main-cutout-progress:last-child,
+  .main-cutout-text:last-child {
+    @apply mb-8 md:mb-10;
+  }
+
+  .subpage-content {
+    @apply max-w-none;
+  }
+
+  .subpage-lead {
+    @apply mb-8 max-w-none text-[1.375rem] font-normal leading-[1.6] tracking-[0.0375rem] text-[#242424] md:mb-10 xl:text-[1.5625rem];
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  .subpage-grid {
+    @apply grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10;
+  }
+
+  .subpage-section {
+    @apply text-base leading-[1.65] text-[#444444];
+  }
+
+  .subpage-section-title {
+    @apply mb-2 block text-base font-bold text-[#333333];
+  }
+
+  .subpage-section + .subpage-section {
+    @apply mt-6;
+  }
+
+  .subpage-status {
+    @apply my-8 text-center text-2xl font-bold text-[#333333] md:my-10 md:text-3xl;
+  }
+
+  .subpage-status-text {
+    @apply mx-auto mb-8 max-w-3xl text-center text-base leading-[1.65] text-[#444444] md:mb-10;
+  }
+
+  .subpage-actions {
+    @apply mb-8 flex flex-wrap justify-center gap-4 md:mb-10;
+  }
+
+  .subpage-footnote {
+    @apply mt-8 border-t border-[#e5e5e5] pt-8 text-sm leading-relaxed text-[#666666] md:mt-10 md:pt-10;
+  }
+
+  .main-cutout-progress {
+    @apply mx-auto mb-0 w-full max-w-4xl;
+  }
+
+  .main-cutout-progress-shell {
+    @apply rounded-full bg-white px-4 py-4 shadow-regio-pill md:px-6 md:py-5;
+  }
+
+  .main-cutout-progress-header {
+    @apply mb-4 flex items-baseline justify-between gap-4 px-6 md:mb-5 md:px-10;
+  }
+
+  .main-cutout-progress-title {
+    @apply text-lg font-bold text-[#333333] md:text-xl;
+  }
+
+  .main-cutout-progress-date {
+    @apply shrink-0 text-sm text-[#666666] md:text-base;
+  }
+
+  .main-cutout-progress-track {
+    @apply h-11 overflow-hidden rounded-full bg-white md:h-12;
+  }
+
+  .main-cutout-progress-fill {
+    @apply flex h-full min-w-[3rem] items-center justify-end rounded-full bg-caritas-red pr-4 text-sm font-bold text-white transition-all duration-500;
+  }
+
+  .breadcrumb {
+    @apply relative z-[2] mb-8 overflow-x-auto md:mb-10;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .breadcrumb::-webkit-scrollbar {
+    display: none;
+  }
+
+  .breadcrumb-list {
+    @apply flex min-h-[30px] items-center whitespace-nowrap text-sm text-[#242424] md:text-[0.875rem];
+    letter-spacing: 0.1rem;
+  }
+
+  .breadcrumb-item {
+    @apply flex items-center;
+  }
+
+  .breadcrumb-home {
+    @apply inline-flex h-[30px] w-[30px] items-center justify-center text-[#242424] transition-colors hover:text-caritas-red;
+  }
+
+  .breadcrumb-separator {
+    @apply mx-3 text-[#242424];
+  }
+
+  .breadcrumb-link {
+    @apply inline-flex h-[30px] items-center text-[#242424] no-underline transition-colors hover:text-caritas-red hover:underline;
+  }
+
+  .breadcrumb-current {
+    @apply inline-flex h-[30px] items-center pr-8 text-[#242424];
+  }
+
+  .footerPane {
+    @apply relative left-1/2 right-1/2 mt-12 w-screen max-w-none -translate-x-1/2 bg-[#242424] text-white;
+  }
+
+  .footerPane-inner {
+    @apply mx-auto max-w-[1200px] px-4;
+  }
+
+  .footerPane-main {
+    @apply grid gap-10 py-12 lg:grid-cols-2 lg:gap-16 lg:py-16;
+  }
+
+  .footerPane-label {
+    @apply text-sm font-semibold uppercase tracking-wide text-[#c5c8c8];
+  }
+
+  .footerPane-cta {
+    @apply mt-6 inline-flex max-w-xl items-start gap-3 text-lg font-bold leading-tight text-white transition-colors hover:text-caritas-red sm:text-xl lg:text-[1.375rem];
+  }
+
+  .footerPane-cta-icon {
+    @apply mt-0.5 h-5 w-5 shrink-0 text-caritas-red sm:h-6 sm:w-6;
+  }
+
+  .footerPane-contact {
+    @apply mt-6 space-y-1 text-sm text-[#c5c8c8];
+  }
+
+  .footerPane-nav {
+    @apply flex flex-col gap-4 lg:gap-5;
+  }
+
+  .footerPane-nav-link {
+    @apply inline-flex items-center gap-2 text-2xl font-medium text-white transition-colors hover:text-caritas-red lg:text-[2rem];
+  }
+
+  .footerPane-nav-icon {
+    @apply h-5 w-5 shrink-0;
+  }
+
+  .footerPane-social {
+    @apply mt-2 inline-flex h-[50px] items-center justify-center rounded-[25px] bg-[hsla(0,0%,100%,0.4)] px-[25px] text-[#242424];
+  }
+
+  .footerPane-social-link {
+    @apply inline-flex leading-none text-[#242424] no-underline;
+  }
+
+  .footerPane-social-link + .footerPane-social-link {
+    @apply ml-[15px];
+  }
+
+  .footerPane-social-icon {
+    @apply h-[27px] w-auto;
+  }
+
+  .footerPane-partners {
+    @apply border-t border-[#575656] py-10;
+  }
+
+  .footerPane-bar {
+    @apply flex flex-col gap-4 border-t border-[#575656] py-6 text-base leading-[1.47] text-[#c5c8c8] sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .footerPane-bar-left {
+    @apply flex w-full flex-col flex-wrap lg:flex-row lg:items-center;
+  }
+
+  .footerPane-bar-links {
+    @apply flex flex-wrap items-center gap-x-10 gap-y-1 lg:ml-10;
+  }
+
+  .footerPane-bar-link {
+    @apply transition-colors hover:text-white;
+  }
+
+  .footerLogo img {
+    @apply max-w-[180px];
+  }
+
+  .glow {
+    @apply ring-2 ring-caritas-red ring-offset-2;
+  }
+
+  .link-email {
+    @apply underline;
+  }
+
+  .kid-title {
+    @apply text-lg font-semibold text-gold-300;
+  }
+}

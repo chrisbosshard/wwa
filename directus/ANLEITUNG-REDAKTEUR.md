@@ -20,6 +20,7 @@ Diese Anleitung ist für **Freiwillige ohne Programmierkenntnisse**.
 | **Kategorien** | Kategorien für Wünsche (Spielzeug, Erlebnis, …) | Inhalt → Category |
 | **Einstellungen** | Kontaktadresse, E-Mail, Anmeldelimit | Inhalt → Global Setting |
 | **Kampagnenstatus** | Phase der Aktion (Anmeldung, Wunscherfüllung, …) | Inhalt → Application → State |
+| **Startseiten-Texte** | Texte im weissen Bereich unter dem Hero (pro Phase) | Inhalt → Campaign Content |
 
 ## Typische Aufgaben
 
@@ -52,6 +53,19 @@ Diese Anleitung ist für **Freiwillige ohne Programmierkenntnisse**.
    - `wish_fulfilment` — Spender können Wünsche erfüllen
    - `closed` — Aktion beendet
 3. Speichern
+
+### Startseiten-Texte bearbeiten
+
+1. **Inhalt → Campaign Content**
+2. Den Eintrag mit der passenden **State**-Phase öffnen (z. B. `closed` für «Aktion beendet»)
+3. Felder anpassen:
+   - **Lead** — Haupttext
+   - **Body** — zweiter Absatz (optional)
+   - **Show Progress** / **Progress Title** / **Progress Max** — Fortschrittsanzeige
+   - **Button 1–3** — Beschriftung, Link und «External» für externe URLs
+4. Speichern
+
+Welcher Text auf der Website erscheint, hängt vom **Application → State** ab (aktuelle Kampagnenphase).
 
 ## Was Sie **nicht** sehen sollten
 

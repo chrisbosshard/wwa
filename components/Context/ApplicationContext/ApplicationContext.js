@@ -1,26 +1,24 @@
 import React, { useState, createContext, useEffect } from "react";
 import { fetchApplication } from "@lib/directus/api-client";
 
-export const ApplicationContext = createContext(null);
+export const ApplicationContext = createContext({ appState: "registration" });
 
 export const ApplicationContextProvider = (props) => {
-  const { kids } = props;
-  const [appState, setAppState] = useState(null);
+  const { kids, initialAppState } = props;
+  const [appState, setAppState] = useState(initialAppState || "registration");
 
   useEffect(() => {
     async function loadApplication() {
       try {
         const { application } = await fetchApplication();
-        if (application?.state) {
-          setAppState(application.state);
-        }
+        setAppState(application?.state || initialAppState || "registration");
       } catch (error) {
         console.error("Failed to load application state", error);
-        setAppState("registration");
+        if (initialAppState) setAppState(initialAppState);
       }
     }
     loadApplication();
-  }, []);
+  }, [initialAppState]);
 
   const value = {
     appState: appState,
