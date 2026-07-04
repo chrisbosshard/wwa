@@ -22,7 +22,6 @@ export interface CampaignContent {
   body?: string | null;
   show_progress?: boolean;
   progress_title?: string | null;
-  progress_max?: number | null;
   progress_value_source?: ProgressValueSource;
   progress_fixed_value?: number | null;
   button_1_label?: string | null;
@@ -72,6 +71,7 @@ export interface Wish {
 
 export interface Family {
   id: string;
+  hygraph_id?: string | null;
   prename?: string;
   surname?: string;
   street?: string;
@@ -89,6 +89,7 @@ export interface Family {
 
 export interface Donor {
   id: string;
+  hygraph_id?: string | null;
   titel?: string;
   prename?: string;
   surname?: string;
@@ -105,6 +106,7 @@ export interface Donor {
 
 export interface Kid {
   id: string;
+  hygraph_id?: string | null;
   date_created?: string;
   prename?: string;
   age?: number;
@@ -117,13 +119,74 @@ export interface Kid {
   donor?: Donor | string | null;
 }
 
+export type PageLayout = "simple" | "one_column" | "two_column" | "three_column";
+
 export interface Page {
   id: string;
   title: string;
   slug: string;
-  body?: string;
+  body?: string | null;
+  lead?: string | null;
+  footnote?: string | null;
+  icon?: string | null;
+  layout?: PageLayout | string | null;
   hero_image?: DirectusFile | string | null;
   sort_order?: number;
+  sections?: PageSection[];
+  state_blocks?: PageStateBlock[];
+  buttons?: PageButton[];
+}
+
+export type PageStateBlockState =
+  | "pre_registration"
+  | "registration"
+  | "waitinglist"
+  | "post_registration"
+  | "wish_fulfilment"
+  | "closed"
+  | "done";
+
+export interface PageButton {
+  id: string;
+  label: string;
+  url: string;
+  external?: boolean;
+  style?: ButtonStyle | null;
+  sort?: number;
+  page?: string | Page;
+}
+
+export interface PageSection {
+  id: string;
+  title: string;
+  body?: string | null;
+  column?: number;
+  sort?: number;
+  page?: string | Page;
+}
+
+export interface PageStateBlock {
+  id: string;
+  state: PageStateBlockState | string;
+  headline?: string | null;
+  lead?: string | null;
+  body?: string | null;
+  button_label?: string | null;
+  button_url?: string | null;
+  page?: string | Page;
+}
+
+export interface StructuredPageContent {
+  title: string;
+  slug: string;
+  layout: PageLayout;
+  icon?: string | null;
+  lead?: string | null;
+  body?: string | null;
+  footnote?: string | null;
+  sections: PageSection[];
+  state_blocks: PageStateBlock[];
+  buttons: PageButton[];
 }
 
 export interface Sponsor {
@@ -141,7 +204,9 @@ export interface GlobalSetting {
   address?: string;
   email?: string;
   contact?: string;
+  /** @deprecated Use wish_limit */
   registration_limit?: number;
+  wish_limit?: number;
 }
 
 /** Hygraph-compatible shapes used by existing components */

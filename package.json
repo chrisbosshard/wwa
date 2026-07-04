@@ -13,10 +13,13 @@
     "directus:fix-relations": "node scripts/fix-directus-relations.mjs",
     "directus:create-editor": "node scripts/create-editor-user.mjs",
     "migrate:hygraph": "node scripts/migrate-hygraph.mjs",
+    "migrate:kids": "node scripts/migrate-kids.mjs",
     "migrate:wish-images": "node scripts/migrate-wish-images.mjs",
     "seed:cms": "node scripts/seed-cms.mjs",
-    "seed:campaign-content": "node scripts/seed-campaign-content.mjs",
-    "directus:campaign-content": "node scripts/add-campaign-content.mjs"
+    "directus:campaign-content": "node scripts/add-campaign-content.mjs",
+    "directus:wish-limit": "node scripts/add-wish-limit.mjs",
+    "directus:remove-state-block-progress": "node scripts/remove-page-state-block-progress-fields.mjs",
+    "directus:page-sections": "node scripts/add-page-sections.mjs"
   },
   "dependencies": {
     "@directus/sdk": "^18.0.3",

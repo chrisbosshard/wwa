@@ -16,6 +16,7 @@ import { step3Schema } from "@validations/register";
 import { Field } from "@elements/TextField/TextField";
 import { Error } from "@elements/TextField/Error";
 import { Button } from "@elements/Button/Button";
+import { buttonContainer, giftContainer, giftCustomMessage, giftLink, link, linkContainer } from "@/lib/ui-classes";
 
 type Category = {
   id: string;
@@ -168,7 +169,7 @@ const OnboardStep3 = (props) => {
                       className="mb-1 flex w-full flex-col items-center justify-between rounded-lg border-2 border-dotted border-gold-300 pb-[43px]"
                     >
                       <button
-                        className="flex aspect-square h-full w-full translate-y-4 cursor-pointer items-center justify-center rounded-lg p-4 font-bold text-gold-300"
+                        className="flex aspect-square h-full w-full translate-y-4 cursor-pointer items-center justify-center rounded-full p-4 font-bold text-gold-300"
                         onClick={() => setActiveKid(index + 1)}
                       >
                         Geschenk hinzufügen
@@ -195,12 +196,12 @@ const OnboardStep3 = (props) => {
       ) : (
         <>
           {!customOpen ? (
-            <div className="gift-container">
-              <div className="gift-customMessage flex items-start gap-3">
+            <div className={giftContainer}>
+              <div className={`${giftCustomMessage} flex items-start gap-3`}>
                 <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-caritas-gray-800" />
                 <h3>
                   Passt keines der Geschenke aus der Liste? Dann melde dein eigenes Geschenk{" "}
-                  <span className="gift-link" onClick={() => setCustomOpen(true)}>
+                  <span className={giftLink} onClick={() => setCustomOpen(true)}>
                     hier
                   </span>{" "}
                   an
@@ -229,15 +230,15 @@ const OnboardStep3 = (props) => {
                 ))}
               </div>
 
-              <div className="button-container">
-                <div className="link-container">
-                  <a className="link" onClick={() => setActiveKid(null)}>
+              <div className={buttonContainer}>
+                <div className={linkContainer}>
+                  <a className={link} onClick={() => setActiveKid(null)}>
                     Zurück
                   </a>
                 </div>
                 {showNum < filteredWishes.length && false ? (
-                  <div className="link-container">
-                    <a className="link" onClick={() => showMore()}>
+                  <div className={linkContainer}>
+                    <a className={link} onClick={() => showMore()}>
                       Weitere Wünsche anzeigen
                     </a>
                   </div>

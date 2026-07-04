@@ -19,6 +19,9 @@ npm run directus:setup
 # 4. Migrate data from Hygraph (optional, requires HYGRAPH_TOKEN in .env)
 npm run migrate:hygraph
 
+# 4b. Migrate only families + kids (keeps existing wishes/categories)
+npm run migrate:kids
+
 # 5. Seed CMS pages and sponsors from hardcoded content
 npm run seed:cms
 

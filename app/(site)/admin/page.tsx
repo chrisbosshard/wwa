@@ -8,6 +8,7 @@ import Hero from "@sections/Hero/Hero";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCart } from "@/components/providers/CartProvider";
+import { buttonContainer, link, linkContainer } from "@/lib/ui-classes";
 
 export default function AdminPage() {
   const { kids } = useCart();
@@ -328,22 +329,22 @@ export default function AdminPage() {
             <Input id="admin-password" value={password ?? ""} onChange={handlePassword} type="password" />
           </div>
           {message && <h3>{message}</h3>}
-          <div className="link-container" onClick={checkPassword}>
-            <a className="link">Login</a>
+          <div className={linkContainer} onClick={checkPassword}>
+            <a className={link}>Login</a>
           </div>
         </div>
       )}
       <div className="details" style={{ display: loggedIn ? "block" : "none" }}>
         {table && (
           <div style={{ textAlign: "center" }}>
-            <div className="button-container">
+            <div className={buttonContainer}>
               <CSVLink data={table}>
-                <div className="link-container">
-                  <a className="link">Liste Herunterladen</a>
+                <div className={linkContainer}>
+                  <a className={link}>Liste Herunterladen</a>
                 </div>
               </CSVLink>
-              <div className="link-container" onClick={generateCode} style={{ marginLeft: "1rem" }}>
-                <a className="link">Code Generieren</a>
+              <div className={linkContainer} onClick={generateCode} style={{ marginLeft: "1rem" }}>
+                <a className={link}>Code Generieren</a>
               </div>
             </div>
             {num > 0 && (

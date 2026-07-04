@@ -43,11 +43,11 @@ const navLinks = [
 
 const Footer = () => {
   return (
-    <footer className="footerPane">
-      <div className="footerPane-inner">
-        <div className="footerPane-main">
+    <footer className="relative left-1/2 right-1/2 mt-12 w-screen max-w-none -translate-x-1/2 bg-[#242424] text-white">
+      <div className="mx-auto max-w-[1200px] px-4">
+        <div className="grid gap-10 py-12 lg:grid-cols-2 lg:gap-16 lg:py-16">
           <div>
-            <div className="footerLogo">
+            <div className="[&_img]:max-w-[180px]">
               <a href="https://www.caritas-zuerich.ch/">
                 <img src="logo_caritas_zh.png" alt="Caritas Zürich" style={{ width: "180px" }} />
               </a>
@@ -55,13 +55,13 @@ const Footer = () => {
 
             <a
               href="mailto:weihnachtswunschaktion@caritas-zuerich.ch"
-              className="footerPane-cta group"
+              className="group mt-6 inline-flex max-w-xl items-start gap-3 text-lg font-bold leading-tight text-white transition-colors hover:text-caritas-red sm:text-xl lg:text-[1.375rem]"
             >
               <span>weihnachtswunschaktion@caritas-zuerich.ch</span>
-              <ArrowUpRightIcon className="footerPane-cta-icon transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              <ArrowUpRightIcon className="mt-0.5 h-5 w-5 shrink-0 text-caritas-red transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:h-6 sm:w-6" />
             </a>
 
-            <div className="footerPane-contact">
+            <div className="mt-6 space-y-1 text-sm text-[#c5c8c8]">
               <p>Caritas Zürich - KulturLegi Zürich</p>
               <p>Reitergasse 1</p>
               <p>8004 Zürich</p>
@@ -70,17 +70,27 @@ const Footer = () => {
           </div>
 
           <div>
-            <nav className="footerPane-nav" aria-label="Footer Navigation">
+            <nav className="flex flex-col gap-4 lg:gap-5" aria-label="Footer Navigation">
               {navLinks.map(({ href, label, external }) =>
                 external ? (
-                  <a key={href} href={href} target="_blank" rel="noreferrer" className="footerPane-nav-link group">
+                  <a
+                    key={href}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group inline-flex items-center gap-2 text-2xl font-medium text-white transition-colors hover:text-caritas-red lg:text-[2rem]"
+                  >
                     <span>{label}</span>
-                    <ArrowUpRightIcon className="footerPane-nav-icon transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    <ArrowUpRightIcon className="h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </a>
                 ) : (
-                  <Link key={href} href={href} className="footerPane-nav-link group">
+                  <Link
+                    key={href}
+                    href={href}
+                    className="group inline-flex items-center gap-2 text-2xl font-medium text-white transition-colors hover:text-caritas-red lg:text-[2rem]"
+                  >
                     <span>{label}</span>
-                    <ArrowUpRightIcon className="footerPane-nav-icon transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    <ArrowUpRightIcon className="h-5 w-5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                   </Link>
                 ),
               )}
@@ -92,8 +102,8 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="footerPane-partners">
-          <p className="footerPane-label pb-6">Unterstützt von</p>
+        <div className="border-t border-[#575656] py-10">
+          <p className="pb-6 text-sm font-semibold uppercase tracking-wide text-[#c5c8c8]">Unterstützt von</p>
           <div className="flex flex-wrap items-center gap-8">
             <a href="https://zh.winterhilfe.ch" target="_blank" rel="noreferrer">
               <img className="max-h-10" src="logo_winterhilfe.png" alt="Winterhilfe" />
@@ -112,11 +122,11 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="footerPane-bar">
-          <div className="footerPane-bar-left">
+        <div className="flex flex-col gap-4 border-t border-[#575656] py-6 text-base leading-[1.47] text-[#c5c8c8] sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex w-full flex-col flex-wrap lg:flex-row lg:items-center">
             <p>Caritas Zürich – KulturLegi Zürich</p>
-            <nav className="footerPane-bar-links" aria-label="Footer Legal Navigation">
-              <Link href="/impressum" className="footerPane-bar-link">
+            <nav className="flex flex-wrap items-center gap-x-10 gap-y-1 lg:ml-10" aria-label="Footer Legal Navigation">
+              <Link href="/impressum" className="transition-colors hover:text-white">
                 Impressum
               </Link>
             </nav>

@@ -175,6 +175,8 @@ async function main() {
     { name: "kid", icon: "child_care" },
     { name: "donor", icon: "volunteer_activism" },
     { name: "page", icon: "article" },
+    { name: "page_section", icon: "view_module" },
+    { name: "page_state_block", icon: "dynamic_feed" },
     { name: "sponsor", icon: "handshake" },
   ];
 
@@ -223,7 +225,6 @@ async function main() {
     schema: { default_value: false },
   });
   await createField(token, "campaign_content", "progress_title", "string", { interface: "input" });
-  await createField(token, "campaign_content", "progress_max", "integer", { interface: "input" });
   await createField(token, "campaign_content", "progress_value_source", "string", {
     interface: "select-dropdown",
     options: { choices: PROGRESS_VALUE_SOURCES },
@@ -260,6 +261,15 @@ async function main() {
     ["address", "text", "input-multiline"],
     ["email", "string", "input"],
     ["contact", "text", "input-multiline"],
+    [
+      "wish_limit",
+      "integer",
+      "input",
+      {
+        note: "Maximale Anzahl Wünsche für alle Fortschrittsanzeigen",
+        schema: { default_value: 3000 },
+      },
+    ],
     ["registration_limit", "integer", "input", { schema: { default_value: 3000 } }],
   ]) {
     await createField(token, "global_setting", f[0], f[1], { interface: f[2], ...(f[3] || {}) });
@@ -333,14 +343,51 @@ async function main() {
   // page
   for (const f of [
     ["title", "string", { required: true }], ["slug", "string", { required: true, unique: true }],
-    ["body", "text"], ["sort_order", "integer"],
+    ["body", "text"], ["lead", "text"], ["footnote", "text"], ["icon", "string"], ["sort_order", "integer"],
   ]) {
     await createField(token, "page", f[0], f[1] === "text" ? "text" : f[1] === "integer" ? "integer" : "string", {
-      interface: f[1] === "text" ? "input-rich-text-html" : "input",
+      interface:
+        f[0] === "lead" || f[0] === "footnote" || f[0] === "body"
+          ? "input-rich-text-html"
+          : f[1] === "integer"
+            ? "input"
+            : "input",
       ...(f[2] || {}),
     });
   }
   await createFileField(token, "page", "hero_image");
+
+  // page_section
+  await createField(token, "page_section", "title", "string", { interface: "input", required: true });
+  await createField(token, "page_section", "body", "text", { interface: "input-rich-text-html" });
+  await createField(token, "page_section", "column", "integer", {
+    interface: "select-dropdown",
+    options: {
+      choices: [
+        { text: "Linke Spalte", value: 1 },
+        { text: "Rechte Spalte", value: 2 },
+      ],
+    },
+    schema: { default_value: 1 },
+  });
+  await createField(token, "page_section", "sort", "integer", { interface: "input", schema: { default_value: 0 } });
+  await createM2OField(token, "page_section", "page", "page", "sections");
+
+  // page_state_block
+  const PAGE_STATE_CHOICES = ["pre_registration", "registration", "waitinglist", "wish_fulfilment"].map((s) => ({
+    text: s,
+    value: s,
+  }));
+  await createField(token, "page_state_block", "state", "string", {
+    interface: "select-dropdown",
+    required: true,
+    options: { choices: PAGE_STATE_CHOICES },
+  });
+  await createField(token, "page_state_block", "headline", "string", { interface: "input" });
+  await createField(token, "page_state_block", "body", "text", { interface: "input-rich-text-html" });
+  await createField(token, "page_state_block", "button_label", "string", { interface: "input" });
+  await createField(token, "page_state_block", "button_url", "string", { interface: "input" });
+  await createM2OField(token, "page_state_block", "page", "page", "state_blocks");
 
   // sponsor
   for (const f of [
@@ -358,14 +405,11 @@ async function main() {
   );
 
   await api(token, "/items/global_setting", "POST", {
+    wish_limit: 3000,
     registration_limit: 3000,
     email: "weihnachtswunsch@caritas-zuerich.ch",
     address: "Caritas Zürich, Beckenhofstrasse 16, 8006 Zürich",
   }).catch(() => null);
-
-  const { seedCampaignContent } = await import("./seed-campaign-content.mjs");
-  console.log("Seeding campaign_content...");
-  await seedCampaignContent(token, (method, path, body) => api(token, path, method, body));
 
   console.log("Schema setup complete.");
 }

@@ -28,7 +28,7 @@ type Props = {
 };
 
 export default function HomePageClient({ initialCampaignContent }: Props) {
-  const { cart, kids, onAddToCart, onRemoveFromCart } = useCart();
+  const { cart, kids, onAddToCart, onRemoveFromCart, wishLimit } = useCart();
 
   const [wishes, setWishes] = useState([]);
   const [filteredWishes, setFilteredWishes] = useState([]);
@@ -94,12 +94,12 @@ export default function HomePageClient({ initialCampaignContent }: Props) {
 
   const baseCompletedKids = 0;
   let allCompletedKids = completedKids + baseCompletedKids;
-  const allBaseKids = 3000;
+  const allBaseKids = wishLimit || 1;
   let completedPercentage = allCompletedKids / allBaseKids;
 
   const isDone = false;
   if (isDone) {
-    allCompletedKids = 3000;
+    allCompletedKids = wishLimit;
     completedPercentage = 1;
   }
 
@@ -121,7 +121,8 @@ export default function HomePageClient({ initialCampaignContent }: Props) {
 
       <div
         className={cn(
-          showLowerContent ? "bg-caritas-gray-50 pt-10 md:pt-12" : "bg-white pt-6 md:pt-8",
+          showLowerContent ? "bg-caritas-gray-50" : "bg-white pt-6 md:pt-8",
+          appState === "pre_registration" && "pt-10 md:pt-12",
         )}
       >
         <div className="mx-auto max-w-[1200px] px-4">

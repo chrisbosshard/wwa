@@ -12,6 +12,7 @@ import { CircleMinus } from "lucide-react";
 import { Field } from "@elements/TextField/TextField";
 import { Error } from "@elements/TextField/Error";
 import { Button } from "@elements/Button/Button";
+import { kidTitle } from "@/lib/ui-classes";
 
 type FormData = z.infer<typeof step2Schema>;
 
@@ -88,7 +89,7 @@ const OnboardStep2 = (props) => {
               </div>
             </div>
             <div>
-              <button className="m-0 flex w-full cursor-pointer items-center justify-center rounded-lg bg-gold-300 p-4 font-bold text-darkblue-300 lg:w-auto">
+              <button className="m-0 flex w-full cursor-pointer items-center justify-center rounded-full bg-gold-300 p-4 font-bold text-darkblue-300 lg:w-auto">
                 Kind Hinzufügen
               </button>
             </div>
@@ -101,7 +102,7 @@ const OnboardStep2 = (props) => {
                 <div key={kid.id} className="mb-1 flex w-full items-center justify-between rounded-xl bg-[#213e5b] p-4">
                   <div>
                     <div className="kid-text">
-                      <p className="kid-title">{kid.prename + " (" + kid.age + ")"}</p>
+                      <p className={kidTitle}>{kid.prename + " (" + kid.age + ")"}</p>
                     </div>
                   </div>
                   <div className="kid-icons">

@@ -1,6 +1,7 @@
 // IMPORT BASICS
 import React, { useState } from "react";
 import Link from "next/link";
+import { inlineLink } from "@/lib/ui-classes";
 
 // IMPORT COMPONENTS
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -135,10 +136,10 @@ const OnBoardStep1 = (props) => {
           {/* <a className="inline-link mt-2 cursor-pointer" onClick={onAlternateStep}>
             Ich habe eine KulturLegi ohne Nummer
           </a> */}
-          <Link className="inline-link mt-2" href="/legihelp">
+          <Link className={`${inlineLink} mt-2`} href="/legihelp">
             Ich brauche Hilfe
           </Link>
-          <a className="inline-link mt-2" href="https://www.kulturlegi.ch/zuerich/kulturlegi-beantragen/wer-ist-berechtigt">
+          <a className={`${inlineLink} mt-2`} href="https://www.kulturlegi.ch/zuerich/kulturlegi-beantragen/wer-ist-berechtigt">
             Ich habe noch keine KulturLegi
           </a>
         </div>

@@ -35,7 +35,6 @@ const CAMPAIGN_CONTENT_FIELDS = [
   "body",
   "show_progress",
   "progress_title",
-  "progress_max",
   "progress_value_source",
   "progress_fixed_value",
   "button_1_label",
@@ -78,8 +77,22 @@ export async function fetchCampaignContentByState(state: string) {
 }
 
 export async function fetchGlobalSettings() {
-  const client = createDirectusClient();
-  return client.request(readSingleton("global_setting", { fields: ["*"] }));
+  return requestDirectus((client) =>
+    client.request(
+      readSingleton("global_setting", {
+        fields: [
+          "site_logo",
+          "hero_logo",
+          "site_logo_white",
+          "address",
+          "email",
+          "contact",
+          "wish_limit",
+          "registration_limit",
+        ],
+      })
+    )
+  );
 }
 
 export async function fetchKidsPage(after: number, time: string, limit = 1000): Promise<LegacyKidsConnection> {
@@ -258,24 +271,95 @@ export async function updateKid(id: string, data: Record<string, unknown>) {
 }
 
 export async function fetchPageBySlug(slug: string) {
-  const client = createDirectusClient();
-  const pages = await client.request(
-    readItems("page", {
-      filter: { slug: { _eq: slug } },
-      fields: ["*", "hero_image.*"],
-      limit: 1,
-    })
-  );
-  return pages[0] || null;
+  return requestDirectus(async (client) => {
+    const pages = await client.request(
+      readItems("page", {
+        filter: { slug: { _eq: slug } },
+        fields: ["*", "hero_image.*"],
+        limit: 1,
+      })
+    );
+    return pages[0] || null;
+  });
+}
+
+const PAGE_SCALAR_FIELDS = [
+  "id",
+  "title",
+  "slug",
+  "layout",
+  "icon",
+  "lead",
+  "body",
+  "footnote",
+  "sort_order",
+] as const;
+
+const PAGE_SECTION_FIELDS = ["id", "title", "body", "column", "sort"] as const;
+
+const PAGE_STATE_BLOCK_FIELDS = [
+  "id",
+  "state",
+  "headline",
+  "lead",
+  "body",
+  "button_label",
+  "button_url",
+] as const;
+
+const PAGE_BUTTON_FIELDS = ["id", "label", "url", "external", "style", "sort"] as const;
+
+export async function fetchPageWithSections(slug: string) {
+  return requestDirectus(async (client) => {
+    const pages = await client.request(
+      readItems("page", {
+        filter: { slug: { _eq: slug } },
+        fields: [...PAGE_SCALAR_FIELDS, "hero_image.*"],
+        limit: 1,
+      })
+    );
+    const page = pages[0];
+    if (!page) return null;
+
+    const pageId = page.id;
+    const [sections, state_blocks, buttons] = await Promise.all([
+      client.request(
+        readItems("page_section", {
+          filter: { page: { _eq: pageId } },
+          fields: [...PAGE_SECTION_FIELDS],
+          sort: ["sort", "title"],
+          limit: -1,
+        })
+      ),
+      client.request(
+        readItems("page_state_block", {
+          filter: { page: { _eq: pageId } },
+          fields: [...PAGE_STATE_BLOCK_FIELDS],
+          limit: -1,
+        })
+      ),
+      client.request(
+        readItems("page_button", {
+          filter: { page: { _eq: pageId } },
+          fields: [...PAGE_BUTTON_FIELDS],
+          sort: ["sort", "label"],
+          limit: -1,
+        })
+      ),
+    ]);
+
+    return { ...page, sections, state_blocks, buttons };
+  });
 }
 
 export async function fetchSponsors() {
-  const client = createDirectusClient();
-  return client.request(
-    readItems("sponsor", {
-      fields: ["*", "logo.*"],
-      sort: ["name"],
-      limit: 100,
-    })
+  return requestDirectus((client) =>
+    client.request(
+      readItems("sponsor", {
+        fields: ["*", "logo.*"],
+        sort: ["name"],
+        limit: 100,
+      })
+    )
   );
 }

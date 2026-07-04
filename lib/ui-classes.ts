@@ -1,0 +1,27 @@
+/** Shared Tailwind class strings used across pages and sections. */
+
+export const inlineLink =
+  "cursor-pointer font-semibold text-caritas-red underline hover:text-caritas-red-dark";
+
+export const link = "cursor-pointer font-semibold text-caritas-red hover:underline";
+
+export const linkContainer =
+  "inline-flex cursor-pointer items-center text-sm font-semibold text-caritas-red hover:underline";
+
+export const buttonContainer = "mt-6 flex flex-wrap items-center gap-4";
+
+export const giftContainer = "rounded-lg border border-gray-200 bg-white p-6";
+
+export const giftCustomMessage = "mb-6 rounded-md bg-caritas-gray-50 p-4";
+
+export const giftLink = "cursor-pointer font-semibold text-caritas-red hover:underline";
+
+export const cmsBody = "[&_p]:mb-4 [&_p]:leading-relaxed [&_p]:text-[#444]";
+
+export const kidTitle = "text-lg font-semibold text-gold-300";
+
+export const linkEmail = "underline";
+
+export const selectionGlow = "ring-2 ring-caritas-red ring-offset-2";
+
+export const sponsorGrid = "grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] items-center gap-6";

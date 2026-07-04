@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Button } from "@elements/Button/Button";
-import { MainCutoutProgress } from "@elements/MainCutout/MainCutoutProgress";
+import { CampaignProgress } from "@elements/Progress/CampaignProgress";
 import CmsHtml from "@elements/MainCutout/CmsHtml";
+import { useCart } from "@/components/providers/CartProvider";
 import { fetchCampaignContent } from "@lib/directus/api-client";
-import { mergeCampaignContent } from "@lib/directus/campaign-content-defaults";
+import { normalizeCampaignContent } from "@lib/directus/campaign-content-defaults";
+import { shouldShowProgress } from "@lib/directus/progress";
 import type { CampaignContent } from "@lib/directus/schema";
 import { cn } from "@/lib/utils";
 
@@ -29,7 +31,12 @@ function CutoutCta({
   if (!buttons.length) return null;
 
   return (
-    <div className={cn("main-cutout-cta", alignedWithProgress && "main-cutout-cta--progress")}>
+    <div
+      className={cn(
+        "flex flex-wrap items-center justify-center gap-4",
+        alignedWithProgress && "mx-auto w-full max-w-4xl",
+      )}
+    >
       {buttons.map((button, index) => (
         <Button
           key={`${button.label}-${index}`}
@@ -52,23 +59,6 @@ type Props = {
   registeredKids: number;
 };
 
-function resolveProgressValue(
-  content: Omit<CampaignContent, "id">,
-  completedKids: number,
-  registeredKids: number
-) {
-  switch (content.progress_value_source) {
-    case "completed_kids":
-      return completedKids;
-    case "registered_kids":
-      return registeredKids;
-    case "fixed":
-      return content.progress_fixed_value ?? 0;
-    default:
-      return 0;
-  }
-}
-
 const MainCutoutContent = ({
   appState,
   initialContent,
@@ -77,6 +67,7 @@ const MainCutoutContent = ({
   registeredKids,
 }: Props) => {
   const state = appState || "registration";
+  const { wishLimit } = useCart();
   const [cmsByState, setCmsByState] = useState<Record<string, CampaignContent>>({});
 
   useEffect(() => {
@@ -107,15 +98,16 @@ const MainCutoutContent = ({
 
   const content = useMemo(() => {
     if (cmsByState[state]) {
-      return mergeCampaignContent(state, cmsByState[state]);
+      return normalizeCampaignContent(state, cmsByState[state]);
     }
     if (initialContent?.state === state) {
       return initialContent;
     }
-    return mergeCampaignContent(state, undefined);
+    return null;
   }, [state, cmsByState, initialContent]);
 
-  const progressValue = resolveProgressValue(content, completedKids, registeredKids);
+  if (!content) return null;
+
   const buttons = [
     {
       label: content.button_1_label,
@@ -137,33 +129,41 @@ const MainCutoutContent = ({
     },
   ].filter((button) => button.label && button.url);
 
-  const showProgress = Boolean(content.show_progress && content.progress_title && content.progress_max);
+  const showProgress = shouldShowProgress(content, wishLimit);
   const progressCta = showProgress && buttons[0] ? buttons[0] : null;
   const actionButtons = progressCta ? buttons.slice(1) : buttons;
 
   return (
-    <>
+    <div className="flex flex-col gap-8 pb-8 md:gap-10 md:pb-10">
       {content.show_page_title !== false && content.page_title && (
-        <h1 className="main-cutout-heading">{content.page_title}</h1>
+        <h1 className="mb-6 font-sans text-[2rem] font-bold leading-tight text-[#333333] md:mb-8 md:text-[2.5rem] md:leading-[1.15]">
+          {content.page_title}
+        </h1>
       )}
 
-      <CmsHtml html={content.lead || ""} className="main-cutout-lead cms-body" />
+      <CmsHtml
+        html={content.lead || ""}
+        className="mb-0 max-w-none font-sans text-[1.375rem] font-normal leading-[1.6] tracking-[0.0375rem] text-[#242424] xl:text-[1.5625rem] [&_p+p]:mt-4 [&_p]:mb-0 [&_p]:leading-[inherit] [&_p]:tracking-[inherit] [&_p]:text-inherit [&_strong]:mb-0 [&_strong]:font-medium [&_strong]:text-inherit"
+      />
 
       <CutoutCta buttons={progressCta ? [progressCta] : []} alignedWithProgress />
 
-      {showProgress ? (
-        <MainCutoutProgress
-          title={content.progress_title!}
-          date={date}
-          value={progressValue}
-          max={content.progress_max!}
-        />
-      ) : null}
+      <CampaignProgress
+        config={content}
+        wishLimit={wishLimit}
+        date={date}
+        completedKids={completedKids}
+        registeredKids={registeredKids}
+        className="mb-0 mt-0"
+      />
 
-      <CmsHtml html={content.body || ""} className="main-cutout-text cms-body" />
+      <CmsHtml
+        html={content.body || ""}
+        className="mb-0 max-w-3xl text-base leading-[1.65] text-[#444444] [&_p+p]:mt-4 [&_p]:mb-0"
+      />
 
       <CutoutCta buttons={actionButtons} />
-    </>
+    </div>
   );
 };
 

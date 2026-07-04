@@ -30,7 +30,7 @@ export const Button = (props: Props) => {
   };
 
   const clsStyle =
-    "mx-4 inline-flex cursor-pointer rounded-md font-semibold justify-center items-center whitespace-nowrap transition-colors";
+    "mx-4 inline-flex cursor-pointer rounded-full font-semibold justify-center items-center whitespace-nowrap transition-colors";
   const clsColor =
     color === "outline"
       ? "text-caritas-red border-2 border-caritas-red bg-white hover:bg-caritas-red hover:text-white"

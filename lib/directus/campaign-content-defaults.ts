@@ -1,27 +1,34 @@
 import type { CampaignContent, CampaignContentState } from "./schema";
-import {
-  CAMPAIGN_CONTENT_DEFAULTS,
-  CAMPAIGN_CONTENT_STATES,
-} from "../../scripts/campaign-content-data.mjs";
 
-export { CAMPAIGN_CONTENT_DEFAULTS, CAMPAIGN_CONTENT_STATES };
-
-export function getDefaultCampaignContent(state: string): Omit<CampaignContent, "id"> {
-  const key = state as CampaignContentState;
-  return CAMPAIGN_CONTENT_DEFAULTS[key] ?? CAMPAIGN_CONTENT_DEFAULTS.registration;
-}
-
-function definedCmsFields(fromCms: Partial<CampaignContent>): Partial<CampaignContent> {
-  return Object.fromEntries(
-    Object.entries(fromCms).filter(([, value]) => value !== null && value !== undefined && value !== "")
-  ) as Partial<CampaignContent>;
-}
-
-export function mergeCampaignContent(
+export function normalizeCampaignContent(
   state: string,
   fromCms: Partial<CampaignContent> | null | undefined
 ): Omit<CampaignContent, "id"> {
-  const defaults = getDefaultCampaignContent(state);
-  if (!fromCms) return defaults;
-  return { ...defaults, ...definedCmsFields(fromCms), state: defaults.state };
+  if (!fromCms?.state) {
+    throw new Error(`Campaign content for state "${state}" not found in CMS`);
+  }
+
+  return {
+    state: fromCms.state as CampaignContentState,
+    show_page_title: fromCms.show_page_title ?? true,
+    page_title: fromCms.page_title ?? null,
+    lead: fromCms.lead ?? null,
+    body: fromCms.body ?? null,
+    show_progress: fromCms.show_progress ?? false,
+    progress_title: fromCms.progress_title ?? null,
+    progress_value_source: fromCms.progress_value_source ?? null,
+    progress_fixed_value: fromCms.progress_fixed_value ?? null,
+    button_1_label: fromCms.button_1_label ?? null,
+    button_1_url: fromCms.button_1_url ?? null,
+    button_1_external: fromCms.button_1_external ?? false,
+    button_1_style: fromCms.button_1_style ?? "primary",
+    button_2_label: fromCms.button_2_label ?? null,
+    button_2_url: fromCms.button_2_url ?? null,
+    button_2_external: fromCms.button_2_external ?? false,
+    button_2_style: fromCms.button_2_style ?? "outline",
+    button_3_label: fromCms.button_3_label ?? null,
+    button_3_url: fromCms.button_3_url ?? null,
+    button_3_external: fromCms.button_3_external ?? false,
+    button_3_style: fromCms.button_3_style ?? "outline",
+  };
 }

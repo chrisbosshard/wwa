@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Providers } from "./providers";
-import { fetchApplication } from "@lib/directus/queries";
+import { fetchApplication, fetchGlobalSettings } from "@lib/directus/queries";
+import { resolveWishLimit } from "@lib/directus/global-settings";
 import "./globals.css";
 import "./hero.css";
 
@@ -14,11 +15,16 @@ export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   let initialAppState = "registration";
+  let wishLimit = 0;
   try {
-    const application = await fetchApplication();
+    const [application, globalSettings] = await Promise.all([
+      fetchApplication(),
+      fetchGlobalSettings(),
+    ]);
     initialAppState = application?.state || "registration";
+    wishLimit = resolveWishLimit(globalSettings);
   } catch (error) {
-    console.error("RootLayout: failed to load application state", error);
+    console.error("RootLayout: failed to load application state or global settings", error);
   }
 
   return (
@@ -43,7 +49,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             });
           `}
         </Script>
-        <Providers initialAppState={initialAppState}>{children}</Providers>
+        <Providers initialAppState={initialAppState} wishLimit={wishLimit}>{children}</Providers>
       </body>
     </html>
   );

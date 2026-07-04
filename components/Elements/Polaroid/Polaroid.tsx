@@ -7,6 +7,7 @@ import axios from "axios";
 import getStripe from "@lib/get-stripe.js";
 import { toast } from "sonner";
 import { Button } from "@elements/Button/Button";
+import { selectionGlow } from "@/lib/ui-classes";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +34,7 @@ const Polaroid = (props) => {
     onAddToCart(kid);
   };
 
-  const kidStyle = cart.includes(kid.id) ? "glow" : "";
+  const kidStyle = cart.includes(kid.id) ? selectionGlow : "";
   const completed = kid.donor && (kid.donor.manualUpload || kid.donor.paymentSuccessful);
 
   let article = "ein";

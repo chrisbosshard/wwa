@@ -1,11 +1,10 @@
 /**
- * Adds campaign_content collection + seed data (idempotent).
+ * Adds campaign_content collection (schema only).
  * Use when Directus already exists but campaign_content is missing.
  *
  * Usage: npm run directus:campaign-content
  */
 import "dotenv/config";
-import { seedCampaignContent } from "./seed-campaign-content.mjs";
 
 const DIRECTUS_URL = process.env.DIRECTUS_URL || "http://localhost:8055";
 const ADMIN_EMAIL = process.env.DIRECTUS_ADMIN_EMAIL || "admin@caritas-zuerich.ch";
@@ -135,7 +134,6 @@ async function main() {
     ["body", "text", { interface: "input-rich-text-html" }],
     ["show_progress", "boolean", { interface: "boolean", schema: { default_value: false } }],
     ["progress_title", "string", { interface: "input" }],
-    ["progress_max", "integer", { interface: "input" }],
     [
       "progress_value_source",
       "string",
@@ -162,9 +160,7 @@ async function main() {
     });
   }
 
-  await seedCampaignContent(token, (method, path, body) => api(token, path, method, body));
-
-  console.log("\nDone. In Directus: Inhalt → Startseiten-Texte (campaign_content), 7 Einträge.");
+  console.log("\nDone. Add content in Directus → Startseiten-Texte (campaign_content).");
 }
 
 main().catch((err) => {

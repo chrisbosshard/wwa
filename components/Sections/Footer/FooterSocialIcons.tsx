@@ -1,7 +1,7 @@
 import React from "react";
 
 const FacebookIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 40" aria-hidden="true" className="footerPane-social-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 40" aria-hidden="true" className="h-[27px] w-auto">
     <path
       fill="currentColor"
       fillRule="evenodd"
@@ -12,7 +12,7 @@ const FacebookIcon = () => (
 );
 
 const LinkedInIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" aria-hidden="true" className="footerPane-social-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" aria-hidden="true" className="h-[27px] w-auto">
     <path
       fill="currentColor"
       fillRule="evenodd"
@@ -23,7 +23,7 @@ const LinkedInIcon = () => (
 );
 
 const InstagramIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" aria-hidden="true" className="footerPane-social-icon">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" aria-hidden="true" className="h-[27px] w-auto">
     <path
       fill="currentColor"
       fillRule="evenodd"
@@ -41,9 +41,16 @@ const socialLinks = [
 
 const FooterSocialIcons = () => {
   return (
-    <div className="footerPane-social">
+    <div className="mt-2 inline-flex h-[50px] items-center justify-center rounded-[25px] bg-[hsla(0,0%,100%,0.4)] px-[25px] text-[#242424]">
       {socialLinks.map(({ href, label, icon: Icon }) => (
-        <a key={label} href={href} target="_blank" rel="noreferrer" aria-label={label} className="footerPane-social-link">
+        <a
+          key={label}
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={label}
+          className="inline-flex leading-none text-[#242424] no-underline [&+&]:ml-[15px]"
+        >
           <Icon />
         </a>
       ))}

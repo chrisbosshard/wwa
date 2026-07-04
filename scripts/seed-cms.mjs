@@ -1,5 +1,7 @@
 /**
- * Seeds CMS pages and sponsors from hardcoded wwa-2026 content.
+ * Optional bootstrap for sponsors and global settings only.
+ * Page content is managed exclusively in Directus.
+ *
  * Usage: npm run seed:cms
  */
 import "dotenv/config";
@@ -18,55 +20,6 @@ async function login() {
   return data.access_token;
 }
 
-async function upsertPage(token, page) {
-  const existing = await fetch(`${DIRECTUS_URL}/items/page?filter[slug][_eq]=${page.slug}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  }).then((r) => r.json());
-
-  if (existing.data?.length) {
-    await fetch(`${DIRECTUS_URL}/items/page/${existing.data[0].id}`, {
-      method: "PATCH",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify(page),
-    });
-  } else {
-    await fetch(`${DIRECTUS_URL}/items/page`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify(page),
-    });
-  }
-}
-
-const pages = [
-  {
-    title: "Über die Aktion",
-    slug: "info",
-    sort_order: 1,
-    body: `<p>Kinder haben Wünsche – kleinere und grössere. Oft gehen diese zu Weihnachten in Erfüllung. Nicht so bei Kindern aus Familien, die nur über ein schmales Budget verfügen. Die Weihnachtswunschaktion von Caritas Zürich leistet hier seit über 10 Jahren einen Beitrag, indem sie ebensolche Wünsche erfüllt.</p>
-<p>Unterstützt durch verschiedene Firmen, Stiftungen und Privatpersonen erfüllen wir mit dem gespendeten Geld Weihnachtswünsche, welche uns Kinder im Oktober eingereicht haben – zum Beispiel einen Eintritt in den Zoo oder ins Alpamare, einen kuscheligen Teddy Bär, eine Gigampfi oder Kinotickets.</p>
-<p>Partner verwandeln die Weihnachtswünsche in der Adventszeit mit Mitarbeitenden oder Freiwilligen zu schönen Geschenke, welche dann kurz vor Weihnachten den Familien übergeben werden.</p>`,
-  },
-  {
-    title: "Kinder unterstützen",
-    slug: "help",
-    sort_order: 2,
-    body: `<p>Informationen zur Unterstützung armutsbetroffener Kinder im Kanton Zürich.</p>`,
-  },
-  {
-    title: "Kontakt",
-    slug: "contact",
-    sort_order: 3,
-    body: `<p>Caritas Zürich<br>Beckenhofstrasse 16<br>8006 Zürich<br>weihnachtswunsch@caritas-zuerich.ch</p>`,
-  },
-  {
-    title: "Impressum",
-    slug: "impressum",
-    sort_order: 4,
-    body: `<p>Caritas Zürich – Weihnachtswunschaktion</p>`,
-  },
-];
-
 const sponsors = [
   { name: "Winterhilfe", link: "https://zh.winterhilfe.ch", featured: true },
   { name: "Lions Club", link: "https://zuerich-rietberg.lionsclub.ch/", featured: true },
@@ -82,11 +35,6 @@ const sponsors = [
 
 async function main() {
   const token = await login();
-  console.log("Seeding pages...");
-  for (const page of pages) {
-    await upsertPage(token, page);
-    console.log(`  ${page.slug}`);
-  }
 
   console.log("Seeding sponsors...");
   for (const sponsor of sponsors) {
@@ -101,6 +49,7 @@ async function main() {
     method: "PATCH",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({
+      wish_limit: 3000,
       registration_limit: 3000,
       email: "weihnachtswunsch@caritas-zuerich.ch",
       address: "Caritas Zürich, Beckenhofstrasse 16, 8006 Zürich",
@@ -108,7 +57,7 @@ async function main() {
     }),
   }).catch(() => null);
 
-  console.log("CMS seed complete.");
+  console.log("CMS bootstrap complete (pages are not seeded — edit content in Directus).");
 }
 
 main().catch(console.error);

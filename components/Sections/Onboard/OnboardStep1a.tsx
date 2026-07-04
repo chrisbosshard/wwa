@@ -13,6 +13,7 @@ import { Button as UiButton } from "@/components/ui/button";
 import { Field } from "@elements/TextField/TextField";
 import { Error } from "@elements/TextField/Error";
 import { Button } from "@elements/Button/Button";
+import { inlineLink } from "@/lib/ui-classes";
 
 // UTILS
 import { checkLeginr } from "@scripts/checkEntry.js";
@@ -96,10 +97,10 @@ const OnBoardStep1 = (props) => {
           <Button className="mt-8">Prüfen</Button>
         </div>
         <div className="mt-4 flex flex-col items-center">
-          <a className="inline-link mt-2 cursor-pointer" onClick={onAlternateStep}>
+          <a className={`${inlineLink} mt-2 cursor-pointer`} onClick={onAlternateStep}>
             Ich habe eine KulturLegi mit Nummer
           </a>
-          <a className="inline-link mt-2" href="https://www.kulturlegi.ch/zuerich/kulturlegi-beantragen/wer-ist-berechtigt">
+          <a className={`${inlineLink} mt-2`} href="https://www.kulturlegi.ch/zuerich/kulturlegi-beantragen/wer-ist-berechtigt">
             Ich habe noch gar keine KulturLegi
           </a>
         </div>

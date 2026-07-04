@@ -12,12 +12,15 @@ const DIRECTUS_URL = process.env.DIRECTUS_URL || "http://localhost:8055";
 const ADMIN_EMAIL = process.env.DIRECTUS_ADMIN_EMAIL || "admin@caritas-zuerich.ch";
 const ADMIN_PASSWORD = process.env.DIRECTUS_ADMIN_PASSWORD || "DirectusAdmin2026!";
 
-const EDITOR_COLLECTIONS = ["page", "sponsor", "global_setting", "wish", "category", "application", "campaign_content"];
+const EDITOR_COLLECTIONS = ["page", "page_section", "page_state_block", "page_button", "sponsor", "global_setting", "wish", "category", "application", "campaign_content"];
 const PUBLIC_READ_COLLECTIONS = [
   "application",
   "campaign_content",
   "global_setting",
   "page",
+  "page_section",
+  "page_state_block",
+  "page_button",
   "sponsor",
   "wish",
   "category",
@@ -97,25 +100,30 @@ async function getOrCreateRole(token) {
   return created.data.id;
 }
 
-async function permissionExists(token, policyId, collection, action) {
-  const result = await api(
+async function setPolicyPermission(token, policyId, collection, action) {
+  const existing = await api(
     token,
     "GET",
-    `/permissions?filter[policy][_eq]=${policyId}&filter[collection][_eq]=${collection}&filter[action][_eq]=${action}&fields=id&limit=1`
+    `/permissions?filter[policy][_eq]=${policyId}&filter[collection][_eq]=${collection}&filter[action][_eq]=${action}&fields=id,fields&limit=1`
   );
-  return Boolean(result?.data?.length);
-}
-
-async function setPolicyPermission(token, policyId, collection, action) {
-  if (await permissionExists(token, policyId, collection, action)) return;
-  await api(token, "POST", "/permissions", {
+  const payload = {
     policy: policyId,
     collection,
     action,
     fields: ["*"],
     permissions: {},
     validation: {},
-  });
+  };
+
+  if (existing?.data?.length) {
+    const permission = existing.data[0];
+    const hasAllFields = Array.isArray(permission.fields) && permission.fields.includes("*");
+    if (hasAllFields) return;
+    await api(token, "PATCH", `/permissions/${permission.id}`, payload);
+    return;
+  }
+
+  await api(token, "POST", "/permissions", payload);
 }
 
 async function main() {
