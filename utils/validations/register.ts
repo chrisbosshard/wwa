@@ -45,7 +45,7 @@ export const step2Schema = z.object({
   name: z.string().min(1, { message: "Name fehlt" }),
   age: z.preprocess(
     (a) => parseInt(a as string),
-    z.number({ invalid_type_error: "Nummer eingeben" }).min(0, { message: "Alter fehlt" }).max(14, { message: "Alter muss kleiner als 14 sein" })
+    z.number({ invalid_type_error: "Alter fehlt" }).min(0, { message: "Alter fehlt" }).max(14, { message: "Alter muss kleiner als 14 sein" })
   ),
 });
 

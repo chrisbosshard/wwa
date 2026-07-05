@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
-import Footer from "@sections/Footer/Footer";
 import ApplicationContext from "@context/ApplicationContext/ApplicationContext.js";
 import Polaroid from "@elements/Polaroid/Polaroid";
 import Page from "@elements/Page/Page";
 import StructuredSubpage from "@elements/Page/StructuredSubpage";
 import { Button } from "@elements/Button/Button";
+import { CheckboxField } from "@elements/Checkbox/CheckboxField";
 import { useCart } from "@/components/providers/CartProvider";
 import type { StructuredPageContent } from "@lib/directus/schema";
+import { resolveEffectivePageContent } from "@lib/directus/page-defaults";
 
 type Props = {
   content: StructuredPageContent;
@@ -22,6 +23,7 @@ export default function WunscherfuellenPageClient({ content }: Props) {
   const [filteredKids, setFilteredKids] = useState(null);
   const { appState } = useContext(ApplicationContext);
   const router = useRouter();
+  const effective = resolveEffectivePageContent(content, appState);
 
   useEffect(() => {
     if (appState === "done") {
@@ -56,11 +58,11 @@ export default function WunscherfuellenPageClient({ content }: Props) {
   return (
     <>
       <Page
-        title={content.title}
+        title={effective.title}
         image={content.icon || undefined}
         breadcrumbs={[
           { label: "Weihnachtswunschaktion", href: "/" },
-          { label: content.title },
+          { label: effective.title },
         ]}
       >
         <StructuredSubpage
@@ -73,11 +75,14 @@ export default function WunscherfuellenPageClient({ content }: Props) {
 
       {appState === "wish_fulfilment" && (
         <div className="mx-auto max-w-[1200px] px-4">
-          <div className="mb-6 flex w-full flex-row justify-end gap-3 text-gold-300">
-            <input onChange={toggleWishes} type="checkbox" id="contactPermission" className="min-w-[20px]" />
-            <label htmlFor="contactPermission" className="ml-2">
-              Bereits erfüllte Wünsche ausblenden
-            </label>
+          <div className="mb-5 mt-8 flex w-full justify-end md:mt-10">
+            <CheckboxField
+              id="hideCompletedWishes"
+              checked={showCompleted}
+              onChange={toggleWishes}
+              label="Bereits erfüllte Wünsche ausblenden"
+              className="items-center text-[#333333]"
+            />
           </div>
           <div className="mb-8 grid grid-cols-auto-md gap-6">
             {filteredKids &&
@@ -92,7 +97,6 @@ export default function WunscherfuellenPageClient({ content }: Props) {
           )}
         </div>
       )}
-      <Footer />
     </>
   );
 }

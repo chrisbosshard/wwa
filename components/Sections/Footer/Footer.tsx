@@ -1,37 +1,10 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
-import shuffleArray from "@utils/shuffleArray";
 import FooterSocialIcons from "@sections/Footer/FooterSocialIcons";
-
-let sponsors = [
-  { id: 1, link: "https://www.micro-scooter.com/", image: "micro.png" },
-  { id: 2, link: "https://www.veloblitz.ch/", image: "veloblitz.png" },
-  { id: 3, link: "https://ch.medical.canon/", image: "canon.png" },
-  { id: 4, link: "https://zeb-consulting.com/de-DE", image: "zeb-Logo_weiss.png" },
-  { id: 5, link: "https://privatebank.barclays.com/", image: "barclays.png" },
-  { id: 6, link: "https://www.generali.ch/", image: "generali.png" },
-  { id: 7, link: "https://www.google.ch/", image: "google.png" },
-  { id: 8, link: "https://www.lgt.com/", image: "lgt-bank_weiss.png" },
-  { id: 9, link: "https://www.energie360.ch/", image: "energie360.png" },
-  { id: 10, link: "https://skope.swiss/", image: "skope.png" },
-  { id: 11, link: "https://www.wienachtsdorf.ch/", image: "weihnachtsdorf.png" },
-  { id: 12, link: "https://www.shl-medical.com/", image: "shl.png" },
-  { id: 13, link: "https://www.iway.ch/", image: "iway.png" },
-  { id: 14, link: "https://www.six-group.com", image: "six.png" },
-  { id: 15, link: "https://www.belimo.com/", image: "belimo.png" },
-  { id: 16, link: "https://dearfoundation.ch/", image: "dear.png" },
-  { id: 17, link: "https://eqtgroup.com/", image: "eqt.png" },
-  { id: 18, link: "https://www.russellreynolds.com/en/", image: "russell_reynolds_weiss.png" },
-  { id: 19, link: "https://www.allianz-trade.com/de_CH.html", image: "logo-euler-hermes-allianz-weiss.png" },
-  { id: 20, link: "https://www.pfizer.ch/de", image: "Pfizer-logo_weiss.png" },
-  { id: 21, link: "https://switzerland.ca-indosuez.com", image: "indosuez.png" },
-  { id: 22, link: "https://www.ubs.com/ch/en.html", image: "ubs_weiss.png" },
-  { id: 23, link: "https://www.sh.winterhilfe.ch/", image: "Logo_Winterhilfe_Schaffhausen.png" },
-  { id: 24, link: "https://www.efswiss.ch/", image: "ef.png" },
-  { id: 25, link: "https://siech-cycles.com", image: "sic.png" },
-];
-sponsors = shuffleArray(sponsors);
+import type { DisplaySponsor } from "@lib/directus/sponsors";
 
 const navLinks = [
   { href: "/contact", label: "Kontakt", external: false },
@@ -41,9 +14,46 @@ const navLinks = [
   { href: "https://www.caritas-zuerich.ch/newsletter?nlconf=1", label: "Newsletter", external: true },
 ];
 
-const Footer = () => {
+type Props = {
+  topSponsors?: DisplaySponsor[];
+  otherSponsors?: DisplaySponsor[];
+};
+
+function SponsorLogo({ sponsor }: { sponsor: DisplaySponsor }) {
   return (
-    <footer className="relative left-1/2 right-1/2 mt-12 w-screen max-w-none -translate-x-1/2 bg-[#242424] text-white">
+    <a href={sponsor.link} target="_blank" rel="noreferrer">
+      <img className="max-h-10" src={sponsor.logoUrl} alt={sponsor.name} />
+    </a>
+  );
+}
+
+const Footer = ({ topSponsors, otherSponsors }: Props) => {
+  const [top, setTop] = useState<DisplaySponsor[]>(topSponsors ?? []);
+  const [others, setOthers] = useState<DisplaySponsor[]>(otherSponsors ?? []);
+
+  useEffect(() => {
+    if (topSponsors !== undefined || otherSponsors !== undefined) return;
+
+    async function loadSponsors() {
+      try {
+        const response = await fetch("/api/directus/sponsors");
+        if (!response.ok) return;
+        const data = await response.json();
+        setTop(data.footer?.top ?? []);
+        setOthers(data.footer?.others ?? []);
+      } catch (error) {
+        console.error("Footer: failed to load sponsors", error);
+      }
+    }
+
+    loadSponsors();
+  }, [topSponsors, otherSponsors]);
+
+  const hasSponsors = top.length > 0 || others.length > 0;
+  const showDivider = top.length > 0 && others.length > 0;
+
+  return (
+    <footer className="relative left-1/2 right-1/2 w-screen max-w-none -translate-x-1/2 bg-[#242424] text-white">
       <div className="mx-auto max-w-[1200px] px-4">
         <div className="grid gap-10 py-12 lg:grid-cols-2 lg:gap-16 lg:py-16">
           <div>
@@ -102,25 +112,22 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-[#575656] py-10">
-          <p className="pb-6 text-sm font-semibold uppercase tracking-wide text-[#c5c8c8]">Unterstützt von</p>
-          <div className="flex flex-wrap items-center gap-8">
-            <a href="https://zh.winterhilfe.ch" target="_blank" rel="noreferrer">
-              <img className="max-h-10" src="logo_winterhilfe.png" alt="Winterhilfe" />
-            </a>
-            <a href="https://zuerich-rietberg.lionsclub.ch/" target="_blank" rel="noreferrer">
-              <img className="max-h-10" src="logo_lions.png" alt="Lions Club" />
-            </a>
-            <a href="https://www.axa.ch/" target="_blank" rel="noreferrer">
-              <img className="max-h-10" src="axa.png" alt="AXA" />
-            </a>
-            {[...Array(4)].map((_, index) => (
-              <a key={sponsors[index].id} href={sponsors[index].link} target="_blank" rel="noreferrer">
-                <img className="max-h-10" src={sponsors[index].image} alt="Partner" />
-              </a>
-            ))}
+        {hasSponsors && (
+          <div className="border-t border-[#575656] py-10">
+            <p className="pb-6 text-sm font-semibold uppercase tracking-wide text-[#c5c8c8]">Unterstützt von</p>
+            <div className="flex flex-wrap items-center gap-8">
+              {top.map((sponsor) => (
+                <SponsorLogo key={sponsor.id} sponsor={sponsor} />
+              ))}
+
+              {showDivider && <div className="h-10 w-px shrink-0 bg-[#575656]" aria-hidden="true" />}
+
+              {others.map((sponsor) => (
+                <SponsorLogo key={sponsor.id} sponsor={sponsor} />
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="flex flex-col gap-4 border-t border-[#575656] py-6 text-base leading-[1.47] text-[#c5c8c8] sm:flex-row sm:items-center sm:justify-between">
           <div className="flex w-full flex-col flex-wrap lg:flex-row lg:items-center">

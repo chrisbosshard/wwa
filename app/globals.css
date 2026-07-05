@@ -40,3 +40,18 @@
     padding: 0;
   }
 }
+
+@layer components {
+  .cms-html p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .cms-html p + p {
+    margin-top: 1.25rem;
+  }
+
+  .cms-html > * + * {
+    margin-top: 1.25rem;
+  }
+}

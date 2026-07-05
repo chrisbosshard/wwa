@@ -140,6 +140,12 @@ async function main() {
     console.log(`  ✓ Redakteur ${collection}`);
   }
 
+  console.log("\nSetting up Redakteur file library access...");
+  for (const action of ["create", "read", "update"]) {
+    await setPolicyPermission(token, editorPolicyId, "directus_files", action);
+    console.log(`  ✓ Redakteur directus_files ${action}`);
+  }
+
   console.log("\nSetting up Public read access...");
   for (const collection of PUBLIC_READ_COLLECTIONS) {
     await setPolicyPermission(token, publicPolicyId, collection, "read");

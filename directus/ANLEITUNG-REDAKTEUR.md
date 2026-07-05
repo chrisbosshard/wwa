@@ -21,7 +21,7 @@ Diese Anleitung ist für **Freiwillige ohne Programmierkenntnisse**.
 | **Partner / Sponsoren** | Logos und Links der Partnerfirmen | Inhalt → Sponsor |
 | **Wünsche** | Geschenk-Katalog (Bild, Beschreibung, Altersgruppe) | Inhalt → Wish |
 | **Kategorien** | Kategorien für Wünsche (Spielzeug, Erlebnis, …) | Inhalt → Category |
-| **Einstellungen** | Kontaktadresse, E-Mail, Anmeldelimit | Inhalt → Global Setting |
+| **Einstellungen** | Kontaktadresse, E-Mail, Wunsch-Limit, feste Fortschrittszahl | Inhalt → Global Setting |
 | **Kampagnenstatus** | Phase der Aktion (Anmeldung, Wunscherfüllung, …) | Inhalt → Application → State |
 | **Startseiten-Texte** | Texte im weissen Bereich unter dem Hero (pro Phase) | Inhalt → Campaign Content |
 
@@ -64,21 +64,30 @@ Die Anmeldeseite hat **strukturierte Felder** — das Layout (2 Spalten, Abstän
    - **Page** — muss «anmelden» sein
 
 3. **Inhalt → Page State Block** — Texte die **je nach Kampagnenphase** erscheinen
-   - **State** — Phase (`pre_registration`, `registration`, `waitinglist`, `wish_fulfilment`)
-   - **Headline** — grosser zentrierter Text (z. B. «Die Wunschanmeldung ist abgeschlossen»)
-   - **Lead** — Einleitungstext / erster Absatz (z. B. auf «Wunsch erfüllen»)
-   - **Body** — weiterer Text darunter (optional)
+   - **State** — Phase (`pre_registration`, `registration`, `waitinglist`, `wish_fulfilment`, `closed`, …)
+   - **Title** — optional: überschreibt den Seiten-Titel (H1) für diese Phase
+   - **Notification** — optional: Hinweis-Box unter dem Inhalt (grauer Rahmen mit Icon), z. B. «Sobald alle Wünsche registriert …»
+   - **Lead** — optional: überschreibt den **Lead** der Seite für diese Phase
+   - **Body** — optional: überschreibt den **Body** der Seite für diese Phase
    - **Button Label** / **Button Url** — optionaler Button (z. B. «Warteliste» → `/warteliste`)
-   - **Show Progress** / **Progress Title** / **Progress Max** / **Progress Value Source** — Fortschrittsanzeige (gleich wie Startseite)
    - **Page** — muss zur jeweiligen Unterseite passen (z. B. «wunscherfuellen»)
 
-> **Wichtig:** Welcher Phasentext sichtbar ist, steuert **Application → State** — nicht der Page-State-Block allein. Der Block mit passendem **State** wird angezeigt.
+> **Wichtig:** Die Seite (**Page**) liefert die Standard-Texte (**Title**, **Lead**, **Body**). Felder im **Page State Block** überschreiben nur, wenn sie ausgefüllt sind — leere Felder im Phasenblock = Seitenwert bleibt sichtbar. Welche Phase aktiv ist, steuert **Application → State**.
 
 ### Neuen Partner hinzufügen
 
 1. **Inhalt → Sponsor → Erstellen**
-2. Name, Link (URL) und Logo-Bild hochladen
-3. Speichern
+2. **Name**, **Link** (URL) und **Logo** hochladen
+3. Optional:
+   - **Partner Tier** — «Hauptpartner (oben)» erscheinen zuerst auf `/partner` und im Footer (mit Trennlinie)
+   - **Pin in Footer** — Logo erscheint zusätzlich im Footer (nach den Hauptpartnern)
+   - **Featured** — kann im Footer rotieren (max. 4 Logos, zufällige Auswahl pro Seitenaufruf)
+   - **Sort** — Reihenfolge innerhalb der Stufe (niedrigere Zahl = weiter links)
+4. Speichern
+
+**Logo wird nicht angezeigt?** Seite neu laden (Hard Refresh). Wenn das Logo-Feld leer bleibt, obwohl Sie eine Datei gewählt haben: oben rechts **Speichern** (Häkchen) nicht vergessen. Bei anhaltendem Problem IT bitten, `npm run directus:fix-sponsor` auszuführen.
+
+Alle Sponsor-Einträge mit Name, Link und Logo erscheinen auf der Seite **Unsere Partner** (`/partner`).
 
 ### Wunsch deaktivieren
 
@@ -109,6 +118,12 @@ Die Anmeldeseite hat **strukturierte Felder** — das Layout (2 Spalten, Abstän
 4. Speichern
 
 Welcher Text auf der Website erscheint, hängt vom **Application → State** ab (aktuelle Kampagnenphase).
+
+### Fortschrittsanzeige manuell setzen
+
+1. **Inhalt → Global Setting**
+2. **Wish Limit** — maximale Anzahl (z. B. 3500), bestimmt die volle Breite des Balkens
+3. **Fixed Wish Count** — optional: feste Anzahl **erfüllter** Wünsche für die Fortschrittsanzeige (z. B. 1200). Überschreibt die Live-Zählung, solange das Feld ausgefüllt ist. Leer lassen = echte Anzahl aus der Datenbank.
 
 ## Was Sie **nicht** sehen sollten
 

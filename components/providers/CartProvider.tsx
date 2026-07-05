@@ -40,6 +40,7 @@ type CartContextValue = {
   kids: Kid[];
   loadingKids: boolean;
   wishLimit: number;
+  fixedWishCount: number | null;
   onAddToCart: (kid: { id: string }) => Promise<void>;
   onRemoveFromCart: (id: string) => Promise<void>;
   onEmptyCart: () => void;
@@ -51,10 +52,12 @@ export function CartProvider({
   children,
   initialAppState,
   wishLimit = 0,
+  fixedWishCount = null,
 }: {
   children: React.ReactNode;
   initialAppState?: string;
   wishLimit?: number;
+  fixedWishCount?: number | null;
 }) {
   const [cart, setCart] = useState<string[]>([]);
   const [kids, setKids] = useState<Kid[]>([]);
@@ -145,11 +148,12 @@ export function CartProvider({
       kids,
       loadingKids,
       wishLimit,
+      fixedWishCount,
       onAddToCart,
       onRemoveFromCart,
       onEmptyCart,
     }),
-    [cart, kids, loadingKids, wishLimit, onAddToCart, onRemoveFromCart, onEmptyCart],
+    [cart, kids, loadingKids, wishLimit, fixedWishCount, onAddToCart, onRemoveFromCart, onEmptyCart],
   );
 
   return (

@@ -5,7 +5,6 @@ import { fetchWishes } from "@lib/directus/api-client";
 import Hero from "@sections/Hero/Hero";
 import MainCutout from "@elements/MainCutout/MainCutout";
 import MainCutoutContent from "@elements/MainCutout/MainCutoutContent";
-import Footer from "@sections/Footer/Footer";
 import Polaroid from "@elements/Polaroid/Polaroid";
 import { Button } from "@elements/Button/Button";
 import { Tree } from "@sections/Tree/Tree";
@@ -13,6 +12,7 @@ import ApplicationContext from "@context/ApplicationContext/ApplicationContext";
 import Wish from "@/components/Wish/Wish";
 import { calculateBalls } from "@scripts/calculateBalls";
 import { getToday } from "@scripts/getToday";
+import { countGrantedWishes } from "@lib/directus/progress";
 import { useCart } from "@/components/providers/CartProvider";
 import { FilterSelect, AGE_FILTER_OPTIONS } from "@elements/FilterSelect/FilterSelect";
 import type { CampaignContent } from "@lib/directus/schema";
@@ -84,16 +84,7 @@ export default function HomePageClient({ initialCampaignContent }: Props) {
   };
 
   const date = getToday();
-
-  let completedKids = 0;
-  (kids as { donor?: { paymentSuccessful?: boolean; manualUpload?: boolean } }[]).forEach((kid) => {
-    if (kid.donor && (kid.donor.paymentSuccessful || kid.donor.manualUpload)) {
-      completedKids += 1;
-    }
-  });
-
-  const baseCompletedKids = 0;
-  let allCompletedKids = completedKids + baseCompletedKids;
+  let allCompletedKids = countGrantedWishes(kids);
   const allBaseKids = wishLimit || 1;
   let completedPercentage = allCompletedKids / allBaseKids;
 
@@ -193,7 +184,6 @@ export default function HomePageClient({ initialCampaignContent }: Props) {
           </section>
         )}
 
-        <Footer />
         </div>
       </div>
     </>

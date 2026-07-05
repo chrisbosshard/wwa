@@ -176,9 +176,13 @@ async function main() {
     required: true,
     options: { choices: PAGE_STATE_CHOICES },
   });
-  await createField(token, "page_state_block", "headline", "string", {
+  await createField(token, "page_state_block", "title", "string", {
     interface: "input",
-    note: "Grosser zentrierter Status-Text",
+    note: "Optional: überschreibt den Seiten-Titel für diese Phase",
+  });
+  await createField(token, "page_state_block", "notification", "string", {
+    interface: "input",
+    note: "Hinweis-Box unter dem Inhalt (grauer Rahmen mit Icon)",
   });
   await createField(token, "page_state_block", "lead", "text", {
     interface: "input-rich-text-html",

@@ -19,7 +19,13 @@
     "directus:campaign-content": "node scripts/add-campaign-content.mjs",
     "directus:wish-limit": "node scripts/add-wish-limit.mjs",
     "directus:remove-state-block-progress": "node scripts/remove-page-state-block-progress-fields.mjs",
-    "directus:page-sections": "node scripts/add-page-sections.mjs"
+    "directus:page-sections": "node scripts/add-page-sections.mjs",
+    "directus:rename-notification": "node scripts/rename-headline-to-notification.mjs",
+    "directus:fix-headline-refs": "node scripts/fix-directus-headline-references.mjs",
+    "directus:fixed-wish-count": "node scripts/add-fixed-wish-count.mjs",
+    "directus:sponsor-fields": "node scripts/add-sponsor-fields.mjs",
+    "directus:sponsor-logos": "node scripts/upload-sponsor-logos.mjs",
+    "directus:fix-sponsor": "node scripts/fix-sponsor-directus.mjs"
   },
   "dependencies": {
     "@directus/sdk": "^18.0.3",

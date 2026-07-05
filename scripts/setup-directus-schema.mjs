@@ -270,6 +270,15 @@ async function main() {
         schema: { default_value: 3000 },
       },
     ],
+    [
+      "fixed_wish_count",
+      "integer",
+      "input",
+      {
+        note: "Optional: Feste Anzahl erfüllter Wünsche für die Fortschrittsanzeige (überschreibt Live-Zählung)",
+        translations: [{ language: "de-DE", translation: "Fixed Wish Count" }],
+      },
+    ],
     ["registration_limit", "integer", "input", { schema: { default_value: 3000 } }],
   ]) {
     await createField(token, "global_setting", f[0], f[1], { interface: f[2], ...(f[3] || {}) });
@@ -383,7 +392,10 @@ async function main() {
     required: true,
     options: { choices: PAGE_STATE_CHOICES },
   });
-  await createField(token, "page_state_block", "headline", "string", { interface: "input" });
+  await createField(token, "page_state_block", "notification", "string", {
+    interface: "input",
+    note: "Hinweis-Box unter dem Inhalt (grauer Rahmen mit Icon)",
+  });
   await createField(token, "page_state_block", "body", "text", { interface: "input-rich-text-html" });
   await createField(token, "page_state_block", "button_label", "string", { interface: "input" });
   await createField(token, "page_state_block", "button_url", "string", { interface: "input" });
@@ -392,12 +404,29 @@ async function main() {
   // sponsor
   for (const f of [
     ["name", "string"], ["link", "string"], ["featured", "boolean"],
+    ["pin_in_footer", "boolean"], ["sort", "integer"], ["partner_tier", "string"],
   ]) {
-    await createField(token, "sponsor", f[0], f[1] === "boolean" ? "boolean" : "string", {
-      interface: f[1] === "boolean" ? "boolean" : "input",
+    await createField(token, "sponsor", f[0], f[1] === "boolean" ? "boolean" : f[1] === "integer" ? "integer" : "string", {
+      interface: f[1] === "boolean" ? "boolean" : f[1] === "integer" ? "input" : f[0] === "partner_tier" ? "select-dropdown" : "input",
+      ...(f[0] === "pin_in_footer" ? { note: "Im Footer immer anzeigen (Unterstützt von)" } : {}),
+      ...(f[0] === "featured" ? { note: "Kann im Footer rotierend angezeigt werden" } : {}),
+      ...(f[0] === "sort" ? { note: "Reihenfolge (niedrigere Zahl = weiter links)", schema: { default_value: 0 } } : {}),
+      ...(f[0] === "partner_tier"
+        ? {
+            note: "Partnerseite: Hauptpartner oben, andere Partner unten",
+            options: {
+              choices: [
+                { text: "Hauptpartner (oben)", value: "top" },
+                { text: "Partner (unten)", value: "standard" },
+              ],
+            },
+            schema: { default_value: "standard" },
+          }
+        : {}),
     });
   }
   await createFileField(token, "sponsor", "logo");
+  await createFileRelation(token, "sponsor", "logo");
 
   // Seed application singleton
   await api(token, "/items/application", "POST", { state: "registration" }).catch(() =>

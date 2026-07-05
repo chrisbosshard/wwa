@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 type Props = {
   html: string;
   className?: string;
@@ -6,7 +8,7 @@ type Props = {
 const CmsHtml = ({ html, className }: Props) => {
   if (!html?.trim()) return null;
 
-  return <div className={className} dangerouslySetInnerHTML={{ __html: html }} />;
+  return <div className={cn("cms-html", className)} dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
 export default CmsHtml;

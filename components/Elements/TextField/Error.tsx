@@ -14,7 +14,7 @@ type Props = {
 
 export const Error = (props: Props) => {
   const { errors, type, className } = props;
-  const cls = twMerge("px-1 text-xs text-red-400", className);
+  const cls = twMerge("mt-1 text-xs font-medium leading-snug text-caritas-red", className);
   if (!errors || !errors[type] || !errors[type].message) return null;
   return <p className={cls}>{errors[type].message}</p>;
 };

@@ -22,20 +22,14 @@ export function getSubpageProgressConfig(
     };
   }
 
-  if (appState === "wish_fulfilment" && pageSlug === "wunscherfuellen") {
+  if (
+    (appState === "wish_fulfilment" || appState === "closed" || appState === "done") &&
+    pageSlug === "wunscherfuellen"
+  ) {
     return {
       show_progress: true,
       progress_title: "Wünsche erfüllt:",
       progress_value_source: "completed_kids",
-    };
-  }
-
-  if ((appState === "closed" || appState === "done") && pageSlug === "wunscherfuellen") {
-    return {
-      show_progress: true,
-      progress_title: "Wünsche erfüllt:",
-      progress_value_source: "fixed",
-      progress_fixed_value: null,
     };
   }
 
@@ -46,15 +40,16 @@ export function resolveProgressValue(
   config: ProgressDisplayConfig,
   completedKids: number,
   registeredKids: number,
-  wishLimit = 0
+  wishLimit = 0,
+  fixedWishCount: number | null = null
 ) {
   switch (config.progress_value_source) {
     case "completed_kids":
+    case "fixed":
+      if (fixedWishCount != null) return fixedWishCount;
       return completedKids;
     case "registered_kids":
       return registeredKids;
-    case "fixed":
-      return config.progress_fixed_value ?? wishLimit;
     default:
       return 0;
   }
@@ -65,14 +60,22 @@ export function shouldShowProgress(config: ProgressDisplayConfig | null | undefi
 }
 
 type KidWithDonor = {
+  completed?: boolean;
   donor?: { paymentSuccessful?: string | boolean; manualUpload?: boolean } | null;
 };
 
+export function isGrantedWish(kid: KidWithDonor): boolean {
+  if (!kid.donor) return false;
+  if (kid.donor.manualUpload) return true;
+  const payment = kid.donor.paymentSuccessful;
+  return payment === true || payment === "Yes";
+}
+
+export function countGrantedWishes(kids: KidWithDonor[]) {
+  return kids.reduce((count, kid) => count + (isGrantedWish(kid) ? 1 : 0), 0);
+}
+
+/** @deprecated Use countGrantedWishes */
 export function countCompletedKids(kids: KidWithDonor[]) {
-  return kids.reduce((count, kid) => {
-    if (kid.donor && (kid.donor.paymentSuccessful || kid.donor.manualUpload)) {
-      return count + 1;
-    }
-    return count;
-  }, 0);
+  return countGrantedWishes(kids);
 }

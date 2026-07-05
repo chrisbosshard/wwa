@@ -1,18 +1,17 @@
 import { NextResponse } from "next/server";
 import { fetchSponsors } from "@lib/directus/queries";
-import { getAssetUrl } from "@lib/directus/client";
+import type { Sponsor } from "@lib/directus/schema";
+import { getFooterSponsors, mapDisplaySponsors } from "@lib/directus/sponsors";
 
 export async function GET() {
   try {
-    const sponsors = await fetchSponsors();
-    const mapped = sponsors.map((s) => ({
-      id: s.id,
-      name: s.name,
-      link: s.link,
-      featured: s.featured,
-      logoUrl: getAssetUrl(s.logo),
-    }));
-    return NextResponse.json({ sponsors: mapped });
+    const sponsors = ((await fetchSponsors()) ?? []) as Sponsor[];
+    const footer = getFooterSponsors(sponsors);
+
+    return NextResponse.json({
+      sponsors: mapDisplaySponsors(sponsors),
+      footer,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to fetch sponsors";
     console.error("GET /api/directus/sponsors", error);

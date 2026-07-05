@@ -16,9 +16,9 @@ export const MainCutoutProgress = ({ title, date, value, max }: Props) => {
         <p className="shrink-0 text-sm text-[#666666] md:text-base">{date}</p>
       </div>
       <div className="rounded-full bg-white px-4 py-4 shadow-regio-pill md:px-6 md:py-5">
-        <div className="h-11 overflow-hidden rounded-full bg-white md:h-12">
+        <div className="h-12 overflow-hidden rounded-full bg-white md:h-14">
           <div
-            className="flex h-full min-w-[3rem] items-center justify-end rounded-full bg-caritas-red pr-4 text-sm font-bold text-white transition-all duration-500"
+            className="flex h-full min-w-[3.5rem] items-center justify-end rounded-full bg-caritas-red pr-4 text-base font-bold text-white md:min-w-[4rem] md:pr-5 md:text-lg"
             style={{ width: `${Math.max(percentage, displayValue > 0 ? 8 : 0)}%` }}
           >
             {displayValue}

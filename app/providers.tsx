@@ -8,13 +8,15 @@ export function Providers({
   children,
   initialAppState,
   wishLimit,
+  fixedWishCount,
 }: {
   children: React.ReactNode;
   initialAppState?: string;
   wishLimit?: number;
+  fixedWishCount?: number | null;
 }) {
   return (
-    <CartProvider initialAppState={initialAppState} wishLimit={wishLimit}>
+    <CartProvider initialAppState={initialAppState} wishLimit={wishLimit} fixedWishCount={fixedWishCount ?? null}>
       <Analytics />
       {children}
       <Toaster position="bottom-left" />

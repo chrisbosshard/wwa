@@ -21,6 +21,7 @@ const RELATIONS = [
   { collection: "kid", field: "donor", related: "donor", oneField: "kids" },
   { collection: "family", field: "image", related: "directus_files" },
   { collection: "donor", field: "logo", related: "directus_files" },
+  { collection: "sponsor", field: "logo", related: "directus_files" },
   { collection: "page_section", field: "page", related: "page", oneField: "sections" },
   { collection: "page_state_block", field: "page", related: "page", oneField: "state_blocks" },
 ];

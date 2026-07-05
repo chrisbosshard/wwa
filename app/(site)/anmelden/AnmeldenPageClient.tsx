@@ -4,11 +4,11 @@ import React, { useContext, useState, useEffect } from "react";
 import { fetchWishes } from "@lib/directus/api-client";
 import Link from "next/link";
 import Page from "@elements/Page/Page";
-import Footer from "@sections/Footer/Footer";
 import StructuredSubpage from "@elements/Page/StructuredSubpage";
 import ApplicationContext from "@context/ApplicationContext/ApplicationContext.js";
 import Wish from "@/components/Wish/Wish";
 import type { StructuredPageContent } from "@lib/directus/schema";
+import { resolveEffectivePageContent } from "@lib/directus/page-defaults";
 
 type Props = {
   content: StructuredPageContent;
@@ -17,6 +17,7 @@ type Props = {
 export default function AnmeldenPageClient({ content }: Props) {
   const { appState } = useContext(ApplicationContext);
   const [filteredWishes, setFilteredWishes] = useState([]);
+  const effective = resolveEffectivePageContent(content, appState);
 
   useEffect(() => {
     async function loadWishes() {
@@ -34,11 +35,11 @@ export default function AnmeldenPageClient({ content }: Props) {
   return (
     <>
       <Page
-        title={content.title}
+        title={effective.title}
         image={content.icon || undefined}
         breadcrumbs={[
           { label: "Weihnachtswunschaktion", href: "/" },
-          { label: content.title },
+          { label: effective.title },
         ]}
       >
         <StructuredSubpage
@@ -61,12 +62,6 @@ export default function AnmeldenPageClient({ content }: Props) {
           </div>
         </div>
       )}
-
-      <div className="bg-white">
-        <div className="mx-auto max-w-[1200px] px-4">
-          <Footer />
-        </div>
-      </div>
     </>
   );
 }

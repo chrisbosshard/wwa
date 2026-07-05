@@ -8,9 +8,9 @@ import * as z from "zod";
 import { step4Schema } from "@validations/register";
 
 // CUSTOM COMPONENTS
-import { Field } from "@elements/TextField/TextField";
-import { Error } from "@elements/TextField/Error";
+import { FormField } from "@elements/TextField/FormField";
 import { Button } from "@elements/Button/Button";
+import { onboardFormFields, onboardStepDescription, onboardStepNav, onboardStepTitle } from "@sections/Onboard/OnboardStepPanel";
 
 type FormData = z.infer<typeof step4Schema>;
 
@@ -43,49 +43,31 @@ const OnBoardStep4 = (props) => {
   // RETURN
   return (
     <>
-      <h2 className="font-bold">Schritt 4 - Familienangaben</h2>
-      <h3>
+      <h2 className={onboardStepTitle}>Schritt 4 - Familienangaben</h2>
+      <p className={onboardStepDescription}>
         Bitte fülle alle Felder aus. Wir benötigen diese Angaben für allfällige Rückfragen und das Ausstellen der Anmeldebestätigung. Diese Angaben werden nicht
         an Dritte weitergegeben.
-      </h3>
+      </p>
       <form onSubmit={handleSubmit(checkEntries)} className="w-full">
-        <div className="m-auto flex w-full max-w-2xl flex-col gap-3">
-          <Field label="Vorname*" {...register("prename")} />
-          <Error errors={errors} type="prename" />
-          <Field label="Familienname / Nachname*" {...register("surname")} />
-          <Error errors={errors} type="surname" />
-          <div className="flex w-full flex-col justify-between gap-3 lg:flex-row">
-            <div className="w-full">
-              <Field label="Strasse*" {...register("street")} />
-              <Error errors={errors} type="street" />
-            </div>
-            <div className="w-full">
-              <Field label="Hausnummer*" {...register("nr")} />
-              <Error errors={errors} type="nr" />
-            </div>
+        <div className={onboardFormFields}>
+          <FormField label="Vorname*" name="prename" errors={errors} {...register("prename")} />
+          <FormField label="Familienname / Nachname*" name="surname" errors={errors} {...register("surname")} />
+          <div className="flex w-full flex-col gap-4 lg:flex-row lg:gap-4">
+            <FormField label="Strasse*" name="street" errors={errors} {...register("street")} />
+            <FormField label="Hausnummer*" name="nr" errors={errors} {...register("nr")} />
           </div>
-          <div className="flex w-full flex-col justify-between gap-3 lg:flex-row">
-            <div className="w-full">
-              <Field label="PLZ*" {...register("zipcode")} />
-              <Error errors={errors} type="zipcode" />
-            </div>
-            <div className="w-full">
-              <Field label="Wohnort*" {...register("city")} />
-              <Error errors={errors} type="city" />
-            </div>
+          <div className="flex w-full flex-col gap-4 lg:flex-row lg:gap-4">
+            <FormField label="PLZ*" name="zipcode" errors={errors} {...register("zipcode")} />
+            <FormField label="Wohnort*" name="city" errors={errors} {...register("city")} />
           </div>
-          <Field label="Telefonnummer*" {...register("phone")} />
-          <Error errors={errors} type="phone" />
-          <Field label="Email*" {...register("email")} />
-          <Error errors={errors} type="email" />
+          <FormField label="Telefonnummer*" name="phone" errors={errors} {...register("phone")} />
+          <FormField label="Email*" name="email" errors={errors} {...register("email")} />
         </div>
-        <div className="flex w-full flex-col justify-center lg:flex-row">
-          <Button type="button" onClick={onStepBack} className="mx-0 mt-8 lg:mx-4">
+        <div className={onboardStepNav}>
+          <Button type="button" onClick={onStepBack}>
             Zurück
           </Button>
-          <Button type="submit" className="mx-0 mt-4 lg:mx-4 lg:mt-8">
-            Weiter
-          </Button>
+          <Button type="submit">Weiter</Button>
         </div>
       </form>
     </>

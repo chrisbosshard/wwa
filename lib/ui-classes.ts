@@ -14,9 +14,13 @@ export const giftContainer = "rounded-lg border border-gray-200 bg-white p-6";
 
 export const giftCustomMessage = "mb-6 rounded-md bg-caritas-gray-50 p-4";
 
+export const giftPickerSection = "rounded-xl bg-caritas-gray-50 p-6 md:p-8";
+
 export const giftLink = "cursor-pointer font-semibold text-caritas-red hover:underline";
 
-export const cmsBody = "[&_p]:mb-4 [&_p]:leading-relaxed [&_p]:text-[#444]";
+export const underlineTextLink = "cursor-pointer font-semibold text-[#242424] underline hover:text-[#333333]";
+
+export const cmsBody = "[&_p]:leading-relaxed [&_p]:text-[#444]";
 
 export const kidTitle = "text-lg font-semibold text-gold-300";
 

@@ -4,7 +4,9 @@ import React from "react";
 // CUSTOM COMPONENTS
 import { Field } from "@elements/TextField/TextField";
 import { Error } from "@elements/TextField/Error";
+import { CheckboxField } from "@elements/Checkbox/CheckboxField";
 import { Button } from "@elements/Button/Button";
+import { onboardFormFields, onboardStepNav } from "@sections/Onboard/OnboardStepPanel";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -39,33 +41,37 @@ const Auswaehlen = (props) => {
       <h2 className="font-bold">Schritt 5 - Bemerkungen</h2>
       <h3>Hast du noch eine Bemerkung zu deiner Anmeldung? Dann fülle diese nachfolgend aus.</h3>
       <form onSubmit={handleSubmit(checkEntries)} className="w-full">
-        <div className="m-auto flex w-full max-w-2xl flex-col gap-3">
+        <div className={onboardFormFields}>
           <Field label="Bemerkung" {...register("note")} />
-          <Error errors={errors} type="surname" />
         </div>
-        <div className="m-auto mt-6 flex w-full max-w-2xl flex-row gap-3 text-gold-300">
-          <input type="checkbox" {...register("contactPermission")} id="contactPermission" className="min-w-[20px]" />
-          <label htmlFor="contactPermission" className="ml-2">
-            Caritas Zürich darf mich für Kommunikationszwecke (Fotos, Interviews, Portraits) kontaktieren
-          </label>
+        <div className="mt-6">
+          <CheckboxField
+            id="contactPermission"
+            {...register("contactPermission")}
+            label="Caritas Zürich darf mich für Kommunikationszwecke (Fotos, Interviews, Portraits) kontaktieren"
+          />
         </div>
-        <div className="m-auto w-full max-w-2xl">
-          <div className="m-auto my-3 flex w-full flex-row gap-3 text-gold-300">
-            <input type="checkbox" {...register("dataRegulation")} id="dataRegulation" className="min-w-[20px]" />
-            <label htmlFor="dataRegulation" className="ml-2">
-              Ich akzeptiere die{" "}
-              <a className="underline" href="https://caritas-regio.ch/datenschutzbestimmungen" target="_blank">
-                Datenschutzrichtlinien
-              </a>
-            </label>
-          </div>
+        <div className="w-full">
+          <CheckboxField
+            id="dataRegulation"
+            {...register("dataRegulation")}
+            className="my-3"
+            label={
+              <>
+                Ich akzeptiere die{" "}
+                <a className="underline" href="https://caritas-regio.ch/datenschutzbestimmungen" target="_blank">
+                  Datenschutzrichtlinien
+                </a>
+              </>
+            }
+          />
           <Error errors={errors} type="dataRegulation" />
         </div>
-        <div className="m-auto mt-6 flex w-full max-w-2xl flex-col">
-          <label className="text-gold-300" htmlFor="dropdownField">
+        <div className="mt-6 flex w-full flex-col">
+          <label className="text-[#444444]" htmlFor="dropdownField">
             Wie hast du von der Weihnachtswunschaktion erfahren?
           </label>
-          <select className="mt-3 h-14 rounded border border-gold-300 bg-transparent px-3 text-gold-300" {...register("origin")} id="dropdownField">
+          <select className="mt-3 h-14 rounded-md border border-[#d0d0d0] bg-white px-3 text-[#333333]" {...register("origin")} id="dropdownField">
             <option className="text-black" value="">
               Bitte wählen...
             </option>
@@ -93,13 +99,11 @@ const Auswaehlen = (props) => {
           </select>
         </div>
 
-        <div className="flex w-full flex-col justify-center lg:flex-row">
-          <Button type="button" onClick={onStepBack} className="mx-0 mt-12 lg:mx-4">
+        <div className={onboardStepNav}>
+          <Button type="button" onClick={onStepBack}>
             Zurück
           </Button>
-          <Button type="submit" className="mx-0 mt-4 lg:mx-4 lg:mt-12">
-            Weiter
-          </Button>
+          <Button type="submit">Weiter</Button>
         </div>
       </form>
     </>

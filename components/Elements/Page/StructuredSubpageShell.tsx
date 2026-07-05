@@ -6,9 +6,10 @@ import type { StructuredPageContent } from "@lib/directus/schema";
 type Props = {
   content: StructuredPageContent;
   children?: React.ReactNode;
+  afterLead?: React.ReactNode;
 };
 
-export default function StructuredSubpageShell({ content, children }: Props) {
+export default function StructuredSubpageShell({ content, children, afterLead }: Props) {
   return (
     <>
       <Page
@@ -23,12 +24,11 @@ export default function StructuredSubpageShell({ content, children }: Props) {
           content={content}
           appState={null}
           leadClassName={content.icon ? "pr-[clamp(4.5rem,10vw,7.5rem)]" : undefined}
+          afterLead={afterLead}
         />
         {children}
       </Page>
-      <div className="col-span-12 mt-8 px-4 pt-4">
-        <Footer />
-      </div>
+      <Footer />
     </>
   );
 }

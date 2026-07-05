@@ -89,6 +89,7 @@ export async function fetchGlobalSettings() {
           "contact",
           "wish_limit",
           "registration_limit",
+          "fixed_wish_count",
         ],
       })
     )
@@ -300,7 +301,8 @@ const PAGE_SECTION_FIELDS = ["id", "title", "body", "column", "sort"] as const;
 const PAGE_STATE_BLOCK_FIELDS = [
   "id",
   "state",
-  "headline",
+  "title",
+  "notification",
   "lead",
   "body",
   "button_label",
@@ -356,8 +358,8 @@ export async function fetchSponsors() {
   return requestDirectus((client) =>
     client.request(
       readItems("sponsor", {
-        fields: ["*", "logo.*"],
-        sort: ["name"],
+        fields: ["id", "name", "link", "featured", "pin_in_footer", "sort", "partner_tier", "logo", "logo.id"],
+        sort: ["sort", "name"],
         limit: 100,
       })
     )

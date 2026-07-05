@@ -10,10 +10,12 @@ import { Loader2 } from "lucide-react";
 import { Button as UiButton } from "@/components/ui/button";
 
 // CUSTOM COMPONENTS
+import { FormField } from "@elements/TextField/FormField";
 import { Field } from "@elements/TextField/TextField";
 import { Error } from "@elements/TextField/Error";
 import { Button } from "@elements/Button/Button";
 import { inlineLink } from "@/lib/ui-classes";
+import { onboardFormActions, onboardFormFields } from "@sections/Onboard/OnboardStepPanel";
 
 // UTILS
 import { checkLeginr } from "@scripts/checkEntry.js";
@@ -70,37 +72,36 @@ const OnBoardStep1 = (props) => {
       <h2 className="font-bold">Schritt 1 - KulturLegi der Eltern überprüfen</h2>
       <h3>Bitte lade ein Bild / Foto deiner gültigen KulturLegi hoch.</h3>
       <form onSubmit={handleSubmit(checkEntries)} className="w-full">
-        <div className="m-auto flex w-full max-w-2xl flex-col gap-3">
-          <div className="relative flex items-center justify-end">
-            <Field disabled={true} label={label} {...register("image")} className="text-gold-300" />
-            <UiButton asChild className="absolute mr-4">
-              <label className="cursor-pointer">
-                {!loading ? (
-                  <>
-                    Bild hochladen
-                    <input type="file" hidden onChange={handleFileUpload} />
-                  </>
-                ) : (
-                  <>
-                    Ladet
-                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                  </>
-                )}
-              </label>
-            </UiButton>
+        <div className={onboardFormFields}>
+          <div className="w-full">
+            <div className="relative flex items-center justify-end">
+              <Field disabled={true} label={label} {...register("image")} />
+              <UiButton asChild className="absolute mr-4">
+                <label className="cursor-pointer">
+                  {!loading ? (
+                    <>
+                      Bild hochladen
+                      <input type="file" hidden onChange={handleFileUpload} />
+                    </>
+                  ) : (
+                    <>
+                      Ladet
+                      <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    </>
+                  )}
+                </label>
+              </UiButton>
+            </div>
+            <Error errors={errors} type="image" />
           </div>
-          <Error errors={errors} type="image" />
-          <Field label="Email*" {...register("email")} />
-          <Error errors={errors} type="email" />
+          <FormField label="Email*" name="email" errors={errors} {...register("email")} />
         </div>
-        <div className="flex w-full justify-center">
-          <Button className="mt-8">Prüfen</Button>
-        </div>
-        <div className="mt-4 flex flex-col items-center">
-          <a className={`${inlineLink} mt-2 cursor-pointer`} onClick={onAlternateStep}>
+        <div className={onboardFormActions}>
+          <Button type="submit">Prüfen</Button>
+          <a className={`${inlineLink} cursor-pointer`} onClick={onAlternateStep}>
             Ich habe eine KulturLegi mit Nummer
           </a>
-          <a className={`${inlineLink} mt-2`} href="https://www.kulturlegi.ch/zuerich/kulturlegi-beantragen/wer-ist-berechtigt">
+          <a className={inlineLink} href="https://www.kulturlegi.ch/zuerich/kulturlegi-beantragen/wer-ist-berechtigt">
             Ich habe noch gar keine KulturLegi
           </a>
         </div>

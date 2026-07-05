@@ -33,7 +33,7 @@ function CutoutCta({
   return (
     <div
       className={cn(
-        "flex flex-wrap items-center justify-center gap-4",
+        "flex flex-wrap items-center justify-center gap-4 md:gap-6",
         alignedWithProgress && "mx-auto w-full max-w-4xl",
       )}
     >
@@ -67,7 +67,7 @@ const MainCutoutContent = ({
   registeredKids,
 }: Props) => {
   const state = appState || "registration";
-  const { wishLimit } = useCart();
+  const { wishLimit, fixedWishCount } = useCart();
   const [cmsByState, setCmsByState] = useState<Record<string, CampaignContent>>({});
 
   useEffect(() => {
@@ -151,10 +151,11 @@ const MainCutoutContent = ({
       <CampaignProgress
         config={content}
         wishLimit={wishLimit}
+        fixedWishCount={fixedWishCount}
         date={date}
         completedKids={completedKids}
         registeredKids={registeredKids}
-        className="mb-0 mt-0"
+        className="mb-8 mt-0 md:mb-10"
       />
 
       <CmsHtml

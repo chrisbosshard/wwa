@@ -38,7 +38,9 @@ export const Button = (props: Props) => {
         ? "text-white bg-caritas-gray-800 border-2 border-caritas-gray-800 hover:bg-caritas-gray-700"
         : "text-white bg-caritas-red border-2 border-caritas-red hover:bg-caritas-red-dark hover:border-caritas-red-dark";
   const clsSize = size === "normal" ? "py-3 px-8 text-base" : "py-2 px-4 text-sm";
-  const cls = cn(clsStyle, clsColor, clsSize, className);
+  const clsDisabled =
+    "disabled:cursor-not-allowed disabled:border-[#d0d0d0] disabled:bg-[#d0d0d0] disabled:text-white disabled:hover:border-[#d0d0d0] disabled:hover:bg-[#d0d0d0] disabled:hover:text-white";
+  const cls = cn(clsStyle, clsColor, clsSize, clsDisabled, className);
 
   return (
     <>
@@ -53,7 +55,12 @@ export const Button = (props: Props) => {
         </a>
       )}
       {!innerLink && !externalLink && (
-        <button {...rest} type={rest.type ?? "button"} onClick={() => handleClick()} className={cls}>
+        <button
+          {...rest}
+          type={rest.type ?? "button"}
+          onClick={onClick ? () => handleClick() : undefined}
+          className={cls}
+        >
           {children}
         </button>
       )}

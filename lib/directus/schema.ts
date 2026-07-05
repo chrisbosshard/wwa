@@ -168,7 +168,8 @@ export interface PageSection {
 export interface PageStateBlock {
   id: string;
   state: PageStateBlockState | string;
-  headline?: string | null;
+  title?: string | null;
+  notification?: string | null;
   lead?: string | null;
   body?: string | null;
   button_label?: string | null;
@@ -195,6 +196,9 @@ export interface Sponsor {
   link?: string;
   logo?: DirectusFile | string | null;
   featured?: boolean;
+  pin_in_footer?: boolean;
+  sort?: number | null;
+  partner_tier?: "top" | "standard" | null;
 }
 
 export interface GlobalSetting {
@@ -207,6 +211,8 @@ export interface GlobalSetting {
   /** @deprecated Use wish_limit */
   registration_limit?: number;
   wish_limit?: number;
+  /** Manual override for fulfilled-wishes count in progress bars (when set). */
+  fixed_wish_count?: number | null;
 }
 
 /** Hygraph-compatible shapes used by existing components */

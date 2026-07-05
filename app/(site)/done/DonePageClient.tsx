@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Footer from "@sections/Footer/Footer";
 import Polaroid from "@elements/Polaroid/Polaroid";
 import Page from "@elements/Page/Page";
 import StructuredSubpage from "@elements/Page/StructuredSubpage";
@@ -44,7 +43,7 @@ export default function DonePageClient({ content, campaignContent }: Props) {
 
   const today = getToday();
   const completedKids = countCompletedKids(kids);
-  const { wishLimit } = useCart();
+  const { wishLimit, fixedWishCount } = useCart();
 
   return (
     <>
@@ -72,6 +71,7 @@ export default function DonePageClient({ content, campaignContent }: Props) {
         <CampaignProgress
           config={campaignContent}
           wishLimit={wishLimit}
+          fixedWishCount={fixedWishCount}
           date={today}
           completedKids={completedKids}
           registeredKids={kids.length}
@@ -91,8 +91,6 @@ export default function DonePageClient({ content, campaignContent }: Props) {
             </div>
           )}
         </div>
-
-        <Footer />
       </div>
     </>
   );

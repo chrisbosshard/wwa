@@ -1,8 +1,10 @@
 // IMPORT BASICS
-import React from "react";
+import React, { useState } from "react";
 
 // CUSTOM COMPONENTS
 import { Button } from "@elements/Button/Button";
+import { onboardStepAlert } from "@sections/Onboard/OnboardLegiInvalidAlert";
+import { onboardStepNav } from "@sections/Onboard/OnboardStepPanel";
 
 // ****************************************
 // COMPONENT: Auswaehlen
@@ -11,12 +13,30 @@ import { Button } from "@elements/Button/Button";
 const Auswaehlen = (props) => {
   // PROPS
   const { data, onNextStep, onStepBack } = props;
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleConfirm = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      await onNextStep();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Die Anmeldung konnte nicht gespeichert werden. Bitte versuche es erneut.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <>
       <h2 className="font-bold">Zusammenfassung</h2>
       <h3>Bitte überprüfe alle deine Angaben.</h3>
-      <div className="m-auto mt-6 flex w-full max-w-2xl flex-col rounded-xl bg-black bg-opacity-20 p-4 text-gold-300 lg:p-8">
+      <div className="mt-6 flex w-full flex-col rounded-xl bg-[#f7f7f7] p-4 text-[#333333] lg:p-8">
         <table className="hidden lg:table">
           <tbody>
             <tr>
@@ -85,12 +105,18 @@ const Auswaehlen = (props) => {
         </div>
       </div>
 
-      <div className="flex w-full flex-col justify-center lg:flex-row">
-        <Button type="button" onClick={onStepBack} className="mx-0 mt-12 lg:mx-4">
+      {error && (
+        <div className={`${onboardStepAlert} mt-6`} role="alert">
+          <p className="text-sm leading-relaxed text-[#444444]">{error}</p>
+        </div>
+      )}
+
+      <div className={onboardStepNav}>
+        <Button type="button" onClick={onStepBack} disabled={submitting} className="mx-0">
           Zurück
         </Button>
-        <Button onClick={onNextStep} className="mx-0 mt-4 lg:mx-4 lg:mt-12">
-          Bestätigen
+        <Button type="button" onClick={handleConfirm} disabled={submitting} className="mx-0">
+          {submitting ? "Wird gesendet…" : "Bestätigen"}
         </Button>
       </div>
     </>
