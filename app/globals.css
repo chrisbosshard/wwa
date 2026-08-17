@@ -42,9 +42,15 @@
 }
 
 @layer components {
+  .cms-html {
+    color: #444444;
+  }
+
   .cms-html p {
     margin-top: 0;
     margin-bottom: 0;
+    line-height: 1.65;
+    color: #444444;
   }
 
   .cms-html p + p {
@@ -53,5 +59,44 @@
 
   .cms-html > * + * {
     margin-top: 1.25rem;
+  }
+
+  .cms-html li {
+    line-height: 1.65;
+    color: #444444;
+  }
+
+  .cms-html ol {
+    margin-top: 1.5rem;
+    list-style-type: lower-alpha;
+    padding-left: 1.25rem;
+  }
+
+  .cms-html ol > li + li {
+    margin-top: 0.75rem;
+  }
+
+  .cms-html ol ::marker {
+    font-weight: 600;
+    color: #333333;
+  }
+
+  .cms-html a {
+    cursor: pointer;
+    font-weight: 600;
+    color: #e30613;
+    text-decoration: underline;
+  }
+
+  .cms-html a:hover {
+    color: #b8050f;
+  }
+
+  .cms-html [style*="#f8eac5"],
+  .cms-html [style*="#F8EAC5"],
+  .cms-html [style*="248, 234, 197"],
+  .cms-html [color="#f8eac5"],
+  .cms-html [color="#F8EAC5"] {
+    color: #444444 !important;
   }
 }

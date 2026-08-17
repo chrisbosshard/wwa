@@ -20,7 +20,8 @@ export const giftLink = "cursor-pointer font-semibold text-caritas-red hover:und
 
 export const underlineTextLink = "cursor-pointer font-semibold text-[#242424] underline hover:text-[#333333]";
 
-export const cmsBody = "[&_p]:leading-relaxed [&_p]:text-[#444]";
+export const cmsBody =
+  "[&_p]:leading-relaxed [&_p]:text-[#444444] [&_li]:leading-relaxed [&_li]:text-[#444444] [&_span]:text-[#444444] [&_div]:text-[#444444] [&_ol]:mt-6 [&_ol]:list-[lower-alpha] [&_ol]:space-y-3 [&_ol]:pl-5 [&_ol]:text-base [&_ol]:leading-relaxed md:[&_ol]:pl-6 [&_ol]:marker:font-semibold [&_ol]:marker:text-[#333333]";
 
 export const kidTitle = "text-lg font-semibold text-gold-300";
 
