@@ -35,12 +35,12 @@ function SectionColumn({ sections, compact }: { sections: PageSection[]; compact
         <div
           key={section.id}
           className={cn(
-            "text-base leading-[1.65] text-[#444444]",
+            "text-base leading-[1.65] text-[#575656]",
             compact ? "[&+&]:mt-4" : "[&+&]:mt-6",
             cmsLinkStyles,
           )}
         >
-          <span className="mb-2 block text-base font-bold text-[#333333]">{section.title}</span>
+          <span className="mb-2 block text-base font-bold text-[#242424]">{section.title}</span>
           <CmsHtml html={section.body || ""} />
         </div>
       ))}
@@ -104,13 +104,13 @@ function StateBlockNotification({ notification }: { notification: string | null 
   if (!notification) return null;
 
   return (
-    <div className="flex items-center gap-4 rounded-lg border border-[#d0d0d0] bg-[#fafafa] px-5 py-4 md:gap-5 md:px-6">
+    <div className="flex items-center gap-4 rounded-lg border border-[#EBE9E9] bg-[#F6F7F7] px-5 py-4 md:gap-5 md:px-6">
       <InformationCircleIcon
-        className="h-[50px] w-[50px] max-h-[50px] max-w-[50px] shrink-0 text-[#666666]"
+        className="h-[50px] w-[50px] max-h-[50px] max-w-[50px] shrink-0 text-[#575656]"
         aria-hidden
       />
       <div className="min-w-0 flex-1">
-        <p className="text-left text-base font-semibold leading-snug text-[#333333] md:text-lg">
+        <p className="text-left text-base font-semibold leading-snug text-[#242424] md:text-lg">
           {notification}
         </p>
       </div>
@@ -195,7 +195,7 @@ function FootnoteBlock({ content }: { content: StructuredPageContent }) {
     <CmsHtml
       html={content.footnote}
       className={cn(
-        "mt-8 border-t border-[#e5e5e5] pt-8 text-sm leading-relaxed text-[#666666] md:mt-10 md:pt-10",
+        "mt-8 border-t border-[#EBE9E9] pt-8 text-sm leading-relaxed text-[#575656] md:mt-10 md:pt-10",
         cmsLinkStyles,
       )}
     />

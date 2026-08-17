@@ -18,10 +18,12 @@ export const giftPickerSection = "rounded-xl bg-caritas-gray-50 p-6 md:p-8";
 
 export const giftLink = "cursor-pointer font-semibold text-caritas-red hover:underline";
 
-export const underlineTextLink = "cursor-pointer font-semibold text-[#242424] underline hover:text-[#333333]";
+export const underlineTextLink = "cursor-pointer font-semibold text-caritas-gray-500 underline hover:text-caritas-gray-400";
+
+export const cmsAlphaList = "cms-alpha-list";
 
 export const cmsBody =
-  "[&_p]:leading-relaxed [&_p]:text-[#444444] [&_li]:leading-relaxed [&_li]:text-[#444444] [&_span]:text-[#444444] [&_div]:text-[#444444] [&_ol]:mt-6 [&_ol]:list-[lower-alpha] [&_ol]:space-y-3 [&_ol]:pl-5 [&_ol]:text-base [&_ol]:leading-relaxed md:[&_ol]:pl-6 [&_ol]:marker:font-semibold [&_ol]:marker:text-[#333333]";
+  "[&_p]:leading-relaxed [&_p]:text-caritas-gray-400 [&_li]:leading-relaxed [&_li]:text-caritas-gray-400 [&_span]:text-caritas-gray-400 [&_div]:text-caritas-gray-400 [&_ol]:mt-6 [&_ol]:list-[lower-alpha] [&_ol]:space-y-3 [&_ol]:pl-5 [&_ol]:text-base [&_ol]:leading-relaxed md:[&_ol]:pl-6 [&_ol]:marker:font-semibold [&_ol]:marker:text-caritas-gray-500";
 
 export const kidTitle = "text-lg font-semibold text-gold-300";
 

@@ -99,7 +99,7 @@ export default function AuswaehlenPage() {
 
   return (
     <>
-      <Page title="Weihnachtswunsch anmelden" image="icon1.png">
+      <Page title="Weihnachtswunsch anmelden">
         <>
           <p className="mb-0 max-w-none font-sans text-[1.375rem] font-normal leading-[1.6] tracking-[0.0375rem] text-[#242424] md:mb-2 xl:text-[1.5625rem]">
             Melde hier die Wünsche für deine Kinder bis zum 14. Geburtstag an. Es werden nur Anmeldungen aus dem Kanton Zürich und Kanton Schaffhausen

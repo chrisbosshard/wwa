@@ -68,10 +68,10 @@ const Auswaehlen = (props) => {
           <Error errors={errors} type="dataRegulation" />
         </div>
         <div className="mt-6 flex w-full flex-col">
-          <label className="text-[#444444]" htmlFor="dropdownField">
+          <label className="text-[#575656]" htmlFor="dropdownField">
             Wie hast du von der Weihnachtswunschaktion erfahren?
           </label>
-          <select className="mt-3 h-14 rounded-md border border-[#d0d0d0] bg-white px-3 text-[#333333]" {...register("origin")} id="dropdownField">
+          <select className="mt-3 h-14 rounded-md border border-[#EBE9E9] bg-white px-3 text-[#242424]" {...register("origin")} id="dropdownField">
             <option className="text-black" value="">
               Bitte wählen...
             </option>

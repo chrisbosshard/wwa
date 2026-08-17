@@ -36,7 +36,7 @@ const Auswaehlen = (props) => {
     <>
       <h2 className="font-bold">Zusammenfassung</h2>
       <h3>Bitte überprüfe alle deine Angaben.</h3>
-      <div className="mt-6 flex w-full flex-col rounded-xl bg-[#f7f7f7] p-4 text-[#333333] lg:p-8">
+      <div className="mt-6 flex w-full flex-col rounded-xl bg-[#F6F7F7] p-4 text-[#242424] lg:p-8">
         <table className="hidden lg:table">
           <tbody>
             <tr>
@@ -107,7 +107,7 @@ const Auswaehlen = (props) => {
 
       {error && (
         <div className={`${onboardStepAlert} mt-6`} role="alert">
-          <p className="text-sm leading-relaxed text-[#444444]">{error}</p>
+          <p className="text-sm leading-relaxed text-[#575656]">{error}</p>
         </div>
       )}
 

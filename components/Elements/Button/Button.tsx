@@ -39,7 +39,7 @@ export const Button = (props: Props) => {
         : "text-white bg-caritas-red border-2 border-caritas-red hover:bg-caritas-red-dark hover:border-caritas-red-dark";
   const clsSize = size === "normal" ? "py-3 px-8 text-base" : "py-2 px-4 text-sm";
   const clsDisabled =
-    "disabled:cursor-not-allowed disabled:border-[#d0d0d0] disabled:bg-[#d0d0d0] disabled:text-white disabled:hover:border-[#d0d0d0] disabled:hover:bg-[#d0d0d0] disabled:hover:text-white";
+    "disabled:cursor-not-allowed disabled:border-[#EBE9E9] disabled:bg-[#EBE9E9] disabled:text-white disabled:hover:border-[#EBE9E9] disabled:hover:bg-[#EBE9E9] disabled:hover:text-white";
   const cls = cn(clsStyle, clsColor, clsSize, clsDisabled, className);
 
   return (

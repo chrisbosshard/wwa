@@ -1,12 +1,11 @@
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
-import { inlineLink } from "@/lib/ui-classes";
+import { inlineLink, cmsAlphaList } from "@/lib/ui-classes";
 import { cn } from "@/lib/utils";
 
 export const onboardStepAlert =
   "mb-8 w-full rounded-xl border border-[#f0c4c4] bg-[#fef5f5] px-6 py-6 sm:px-8 sm:py-8";
 
-const listStyles =
-  "mt-6 list-[lower-alpha] space-y-3 pl-5 text-sm leading-relaxed text-[#444444] md:pl-6 md:text-[0.9375rem] marker:font-semibold marker:text-[#333333]";
+const listStyles = cmsAlphaList;
 
 export function OnboardLegiInvalidAlert({ className }: { className?: string }) {
   return (
@@ -15,7 +14,7 @@ export function OnboardLegiInvalidAlert({ className }: { className?: string }) {
         <ExclamationCircleIcon className="mt-0.5 h-7 w-7 shrink-0 text-caritas-red md:h-8 md:w-8" aria-hidden />
         <div className="min-w-0 flex-1">
           <p className="text-base font-bold text-[#242424] md:text-lg">Deine KulturLegi-Angaben sind ungültig</p>
-          <p className="mt-2 text-sm leading-relaxed text-[#444444] md:text-[0.9375rem]">
+          <p className="mt-2 text-sm leading-relaxed text-[#575656] md:text-[0.9375rem]">
             Deine KulturLegi-Karte ist inaktiv und die Prüfung deiner KulturLegi-Angaben fehlgeschlagen. Eine Wunschanmeldung ist daher nicht möglich.
           </p>
 
@@ -53,7 +52,7 @@ export function OnboardLegiInvalidAlert({ className }: { className?: string }) {
             </li>
           </ol>
 
-          <p className="mt-6 text-sm leading-relaxed text-[#444444] md:text-[0.9375rem]">
+          <p className="mt-6 text-sm leading-relaxed text-[#575656] md:text-[0.9375rem]">
             Brauchst du Hilfe? Telefonisch sind wir unter 044 366 68 48 erreichbar oder sind persönlich im KulturLegi-Büro, im Digi-Treff oder in den
             Lernstuben vom Kanton Zürich für dich da.
           </p>

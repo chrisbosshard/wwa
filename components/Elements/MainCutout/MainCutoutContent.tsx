@@ -136,7 +136,7 @@ const MainCutoutContent = ({
   return (
     <div className="flex flex-col gap-8 pb-8 md:gap-10 md:pb-10">
       {content.show_page_title !== false && content.page_title && (
-        <h1 className="mb-6 font-sans text-[2rem] font-bold leading-tight text-[#333333] md:mb-8 md:text-[2.5rem] md:leading-[1.15]">
+        <h1 className="mb-6 font-sans text-[2rem] font-bold leading-tight text-[#242424] md:mb-8 md:text-[2.5rem] md:leading-[1.15]">
           {content.page_title}
         </h1>
       )}
@@ -160,7 +160,7 @@ const MainCutoutContent = ({
 
       <CmsHtml
         html={content.body || ""}
-        className="mb-0 max-w-3xl text-base leading-[1.65] text-[#444444] [&_p+p]:mt-4 [&_p]:mb-0"
+        className="mb-0 max-w-3xl text-base leading-[1.65] text-[#575656] [&_p+p]:mt-4 [&_p]:mb-0"
       />
 
       <CutoutCta buttons={actionButtons} />

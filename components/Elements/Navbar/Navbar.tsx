@@ -216,7 +216,7 @@ const Navbar = ({
 
                   {cartOpen && (
                     <div className="absolute right-0 top-[calc(100%+0.5rem)] z-[1300] w-[17rem] rounded-lg border border-gray-200 bg-white p-5 shadow-[0_8px_24px_rgba(0,0,0,0.12)]">
-                      <p className="mb-4 text-sm text-gray-700">Anzahl Geschenke im Geschenkekorb</p>
+                      <p className="mb-4 text-sm text-caritas-gray-400">Anzahl Geschenke im Geschenkekorb</p>
                       <div className="flex flex-row items-center justify-center">
                         <button
                           type="button"

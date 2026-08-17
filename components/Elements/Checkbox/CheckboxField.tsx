@@ -11,7 +11,7 @@ export function CheckboxField({ label, className, id, ref, ...props }: Props) {
     <label
       htmlFor={id}
       className={cn(
-        "group flex cursor-pointer items-start gap-3 text-base leading-normal text-[#444444]",
+        "group flex cursor-pointer items-start gap-3 text-base leading-normal text-[#575656]",
         className,
       )}
     >
@@ -20,7 +20,7 @@ export function CheckboxField({ label, className, id, ref, ...props }: Props) {
         aria-hidden
         className={cn(
           "mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded border-2 transition-colors",
-          "border-[#888888] bg-white group-has-[:checked]:border-caritas-red group-has-[:checked]:bg-caritas-red",
+          "border-[#C5C8C8] bg-white group-has-[:checked]:border-caritas-red group-has-[:checked]:bg-caritas-red",
         )}
       >
         <svg

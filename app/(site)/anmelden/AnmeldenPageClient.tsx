@@ -36,17 +36,12 @@ export default function AnmeldenPageClient({ content }: Props) {
     <>
       <Page
         title={effective.title}
-        image={content.icon || undefined}
         breadcrumbs={[
           { label: "Weihnachtswunschaktion", href: "/" },
           { label: effective.title },
         ]}
       >
-        <StructuredSubpage
-          content={content}
-          appState={appState}
-          leadClassName={content.icon ? "pr-[clamp(4.5rem,10vw,7.5rem)]" : undefined}
-        />
+        <StructuredSubpage content={content} appState={appState} />
       </Page>
 
       {appState === "registration" && (

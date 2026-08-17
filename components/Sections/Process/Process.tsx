@@ -45,7 +45,7 @@ export function Process({ step }: Props) {
               <span
                 className={cn(
                   "text-[0.625rem] font-medium uppercase tracking-wide sm:text-xs",
-                  state === "upcoming" ? "text-[#999999]" : "text-[#666666]",
+                  state === "upcoming" ? "text-[#C5C8C8]" : "text-[#575656]",
                 )}
               >
                 Schritt {stepNumber}
@@ -55,8 +55,8 @@ export function Process({ step }: Props) {
                 className={cn(
                   "mt-1 line-clamp-2 text-[0.6875rem] font-semibold leading-snug sm:text-xs md:text-sm",
                   state === "current" && "text-[#242424]",
-                  state === "completed" && "text-[#333333]",
-                  state === "upcoming" && "text-[#999999]",
+                  state === "completed" && "text-[#242424]",
+                  state === "upcoming" && "text-[#C5C8C8]",
                 )}
               >
                 {label}
@@ -90,7 +90,7 @@ export function Process({ step }: Props) {
                   "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 sm:h-8 sm:w-8 md:h-9 md:w-9",
                   state === "current" && "border-caritas-red bg-caritas-red",
                   state === "completed" && "border-[#172b3f] bg-[#172b3f]",
-                  state === "upcoming" && "border-[#d0d0d0] bg-white",
+                  state === "upcoming" && "border-[#EBE9E9] bg-white",
                 )}
               >
                 {state === "completed" && <CheckIcon className="h-3.5 w-3.5 text-white sm:h-4 sm:w-4" aria-hidden />}

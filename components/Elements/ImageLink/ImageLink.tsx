@@ -19,7 +19,7 @@ export const ImageLink = ({ link, image1, image2, title, text }: Props) => {
         <img src={image2} className="hidden max-h-16 w-auto group-hover:block" alt="" />
       </div>
       <h3 className="mb-3 text-lg font-bold text-caritas-gray-800">{title}</h3>
-      <p className="mb-4 flex-1 text-[0.9375rem] leading-relaxed text-[#666]">{text}</p>
+      <p className="mb-4 flex-1 text-[0.9375rem] leading-relaxed text-caritas-gray-400">{text}</p>
       <span className="text-sm font-semibold text-caritas-red after:content-['_→']">Mehr erfahren</span>
     </Link>
   );

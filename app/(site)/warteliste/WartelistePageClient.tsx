@@ -23,17 +23,12 @@ export default function WartelistePageClient({ content }: Props) {
     <>
       <Page
         title={effective.title}
-        image={content.icon || undefined}
         breadcrumbs={[
           { label: "Weihnachtswunschaktion", href: "/" },
           { label: effective.title },
         ]}
       >
-        <StructuredSubpage
-          content={content}
-          appState="waitinglist"
-          leadClassName={content.icon ? "pr-[clamp(4.5rem,10vw,7.5rem)]" : undefined}
-        >
+        <StructuredSubpage content={content} appState="waitinglist">
           <OnboardStep1 contact={contact} onNextStep={toStep2} waitinglist />
         </StructuredSubpage>
       </Page>

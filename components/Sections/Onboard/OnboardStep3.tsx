@@ -159,17 +159,17 @@ const OnboardStep3 = (props) => {
 
       {!activeKid ? (
         <>
-          <div className="mb-8 w-full overflow-hidden rounded-xl border border-[#e8e8e8]">
+          <div className="mb-8 w-full overflow-hidden rounded-xl border border-[#EBE9E9]">
             <table className="w-full text-left text-sm">
-              <thead className="border-b border-[#e8e8e8] bg-[#fafafa]">
+              <thead className="border-b border-[#EBE9E9] bg-[#F6F7F7]">
                 <tr>
-                  <th scope="col" className="px-4 py-3 text-sm font-semibold text-[#333333] sm:px-5">
+                  <th scope="col" className="px-4 py-3 text-sm font-semibold text-[#242424] sm:px-5">
                     Vorname
                   </th>
-                  <th scope="col" className="px-4 py-3 text-sm font-semibold text-[#333333] sm:px-5">
+                  <th scope="col" className="px-4 py-3 text-sm font-semibold text-[#242424] sm:px-5">
                     Alter
                   </th>
-                  <th scope="col" className="px-4 py-3 text-sm font-semibold text-[#333333] sm:px-5">
+                  <th scope="col" className="px-4 py-3 text-sm font-semibold text-[#242424] sm:px-5">
                     Geschenk
                   </th>
                   <th scope="col" className="px-4 py-3 text-right sm:px-5">
@@ -177,16 +177,16 @@ const OnboardStep3 = (props) => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#e8e8e8] bg-white">
+              <tbody className="divide-y divide-[#EBE9E9] bg-white">
                 {kids.map((kid, index) => (
                   <tr key={`${kid.prename}-${kid.age}-${index}`}>
-                    <td className="px-4 py-3 text-base font-medium text-[#333333] sm:px-5 sm:py-4">{kid.prename}</td>
-                    <td className="px-4 py-3 text-base text-[#444444] sm:px-5 sm:py-4">{kid.age}</td>
+                    <td className="px-4 py-3 text-base font-medium text-[#242424] sm:px-5 sm:py-4">{kid.prename}</td>
+                    <td className="px-4 py-3 text-base text-[#575656] sm:px-5 sm:py-4">{kid.age}</td>
                     <td className="px-4 py-3 text-base sm:px-5 sm:py-4">
                       {kid.wish ? (
-                        <span className="text-[#333333]">{kid.wish.description}</span>
+                        <span className="text-[#242424]">{kid.wish.description}</span>
                       ) : (
-                        <span className="text-[#999999]">Noch kein Geschenk ausgewählt</span>
+                        <span className="text-[#C5C8C8]">Noch kein Geschenk ausgewählt</span>
                       )}
                     </td>
                     <td className="whitespace-nowrap px-4 py-3 text-right sm:px-5 sm:py-4">
@@ -213,8 +213,8 @@ const OnboardStep3 = (props) => {
           {!customOpen ? (
             <>
               <div className={`${giftCustomMessage} flex items-start gap-3`}>
-                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#666666]" />
-                <p className="text-base leading-relaxed text-[#444444]">
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-[#575656]" />
+                <p className="text-base leading-relaxed text-[#575656]">
                   Passt keines der Geschenke aus der Liste? Dann melde dein eigenes Geschenk{" "}
                   <button type="button" className={giftLink} onClick={() => setCustomOpen(true)}>
                     hier

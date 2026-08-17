@@ -37,7 +37,7 @@ export const Tree = ({ balls }: Props) => {
             <div className={cn("h-full origin-top", wiggleMap[ball.animation])}>
               <div
                 className={cn(
-                  "absolute left-[10%] top-[10%] h-[80%] w-[80%] rounded-full bg-caritas-red/15 shadow-[0_0_18px_4px_rgba(227,6,19,0.25)]",
+                  "absolute left-[10%] top-[10%] h-[80%] w-[80%] rounded-full bg-caritas-red/15 shadow-[0_0_18px_4px_rgba(254,0,32,0.25)]",
                   glowMap[ball.animation],
                 )}
                 style={{ zIndex: 0 }}

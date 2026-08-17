@@ -59,18 +59,12 @@ export default function WunscherfuellenPageClient({ content }: Props) {
     <>
       <Page
         title={effective.title}
-        image={content.icon || undefined}
         breadcrumbs={[
           { label: "Weihnachtswunschaktion", href: "/" },
           { label: effective.title },
         ]}
       >
-        <StructuredSubpage
-          content={content}
-          appState={appState}
-          showButtons={appState === "closed"}
-          leadClassName={content.icon ? "pr-[clamp(4.5rem,10vw,7.5rem)]" : undefined}
-        />
+        <StructuredSubpage content={content} appState={appState} showButtons={appState === "closed"} />
       </Page>
 
       {appState === "wish_fulfilment" && (
@@ -81,7 +75,7 @@ export default function WunscherfuellenPageClient({ content }: Props) {
               checked={showCompleted}
               onChange={toggleWishes}
               label="Bereits erfüllte Wünsche ausblenden"
-              className="items-center text-[#333333]"
+              className="items-center text-[#242424]"
             />
           </div>
           <div className="mb-8 grid grid-cols-auto-md gap-6">

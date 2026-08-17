@@ -60,14 +60,14 @@ const OnboardStep2 = (props) => {
         auswählen.
       </p>
       <>
-        <div className="mb-8 w-full overflow-hidden rounded-xl border border-[#e8e8e8]">
+        <div className="mb-8 w-full overflow-hidden rounded-xl border border-[#EBE9E9]">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-[#e8e8e8] bg-[#fafafa]">
+            <thead className="border-b border-[#EBE9E9] bg-[#F6F7F7]">
               <tr>
-                <th scope="col" className="px-4 py-3 text-sm font-semibold text-[#333333] sm:px-5">
+                <th scope="col" className="px-4 py-3 text-sm font-semibold text-[#242424] sm:px-5">
                   Vorname
                 </th>
-                <th scope="col" className="px-4 py-3 text-sm font-semibold text-[#333333] sm:px-5">
+                <th scope="col" className="px-4 py-3 text-sm font-semibold text-[#242424] sm:px-5">
                   Alter
                 </th>
                 <th scope="col" className="w-14 px-4 py-3 sm:px-5">
@@ -75,23 +75,23 @@ const OnboardStep2 = (props) => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#e8e8e8] bg-white">
+            <tbody className="divide-y divide-[#EBE9E9] bg-white">
               {kids.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="px-4 py-8 text-center text-sm text-[#666666] sm:px-5 sm:py-10">
+                  <td colSpan={3} className="px-4 py-8 text-center text-sm text-[#575656] sm:px-5 sm:py-10">
                     Noch keine Kinder erfasst. Füge unten ein Kind hinzu.
                   </td>
                 </tr>
               ) : (
                 kids.map((kid, index) => (
                   <tr key={`${kid.prename}-${kid.age}-${index}`}>
-                    <td className="px-4 py-3 text-base font-medium text-[#333333] sm:px-5 sm:py-4">{kid.prename}</td>
-                    <td className="px-4 py-3 text-base text-[#444444] sm:px-5 sm:py-4">{kid.age}</td>
+                    <td className="px-4 py-3 text-base font-medium text-[#242424] sm:px-5 sm:py-4">{kid.prename}</td>
+                    <td className="px-4 py-3 text-base text-[#575656] sm:px-5 sm:py-4">{kid.age}</td>
                     <td className="px-4 py-3 text-right sm:px-5 sm:py-4">
                       <button
                         type="button"
                         onClick={() => removeKid(index)}
-                        className="inline-flex rounded-md p-1 text-[#666666] transition-colors hover:text-caritas-red"
+                        className="inline-flex rounded-md p-1 text-[#575656] transition-colors hover:text-caritas-red"
                         aria-label={`${kid.prename} entfernen`}
                       >
                         <CircleMinus className="h-5 w-5" />
@@ -141,7 +141,7 @@ const OnboardStep2 = (props) => {
 
         {confirm && (
           <div className="fixed left-0 top-0 z-[2000] flex h-full w-full items-center justify-center bg-black/20 p-4">
-            <div className="w-full max-w-md rounded-2xl border border-[#e8e8e8] bg-white p-8 shadow-sm">
+            <div className="w-full max-w-md rounded-2xl border border-[#EBE9E9] bg-white p-8 shadow-sm">
               <h3 className="text-center text-lg font-bold text-[#242424]">Hast du alle Kinder erfasst?</h3>
               <div className="mt-8 flex flex-row items-center justify-center gap-4">
                 <Button type="button" onClick={() => setConfirm(false)} className="mx-0">
