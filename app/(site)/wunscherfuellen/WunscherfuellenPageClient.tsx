@@ -59,7 +59,6 @@ export default function WunscherfuellenPageClient({ content }: Props) {
     <>
       <Page
         title={effective.title}
-        image={content.icon || undefined}
         breadcrumbs={[
           { label: "Weihnachtswunschaktion", href: "/" },
           { label: effective.title },
@@ -69,7 +68,6 @@ export default function WunscherfuellenPageClient({ content }: Props) {
           content={content}
           appState={appState}
           showButtons={appState === "closed"}
-          leadClassName={content.icon ? "pr-[clamp(4.5rem,10vw,7.5rem)]" : undefined}
         />
       </Page>
 

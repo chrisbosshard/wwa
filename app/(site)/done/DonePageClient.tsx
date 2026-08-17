@@ -49,16 +49,12 @@ export default function DonePageClient({ content, campaignContent }: Props) {
     <>
       <Page
         title={content.title}
-        image={content.icon || undefined}
         breadcrumbs={[
           { label: "Weihnachtswunschaktion", href: "/" },
           { label: content.title },
         ]}
       >
-        <StructuredSubpage
-          content={content}
-          leadClassName={content.icon ? "pr-[clamp(4.5rem,10vw,7.5rem)]" : undefined}
-        />
+        <StructuredSubpage content={content} />
       </Page>
 
       <div className="mx-auto max-w-[1200px] px-4">

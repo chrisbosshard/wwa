@@ -2,11 +2,10 @@ import Breadcrumb, { type BreadcrumbItem } from "@elements/Breadcrumb/Breadcrumb
 
 type Props = {
   breadcrumbs: BreadcrumbItem[];
-  icon?: string;
   children?: React.ReactNode;
 };
 
-const MainCutout = ({ breadcrumbs, icon, children }: Props) => {
+const MainCutout = ({ breadcrumbs, children }: Props) => {
   return (
     <section className="relative z-10 -mt-[16rem]">
       <div
@@ -15,18 +14,6 @@ const MainCutout = ({ breadcrumbs, icon, children }: Props) => {
       />
 
       <div className="relative z-[1] mx-auto max-w-[77rem] px-4 pt-8 md:px-8 md:pt-10">
-      {icon ? (
-        <div className="pointer-events-none absolute right-8 top-8">
-          <div className="relative z-[1] mx-auto flex max-w-[77rem] justify-end px-4 md:px-8">
-            <img
-              src={`/${icon}`}
-              alt=""
-              className="aspect-square w-[clamp(4.25rem,9vw,7rem)] object-contain"
-              aria-hidden="true"
-            />
-          </div>
-        </div>
-      ) : null}
         <Breadcrumb items={breadcrumbs} />
       </div>
       <div className="relative z-[1] pb-10 pt-2 md:pb-12">

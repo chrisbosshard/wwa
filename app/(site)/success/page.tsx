@@ -52,7 +52,7 @@ function SuccessContent() {
 
   return (
     <>
-      <Page title={error ? "Fehler" : "Zahlung erfolgreich"} image="icon2.png">
+      <Page title={error ? "Fehler" : "Zahlung erfolgreich"}>
         {error ? (
           <h2 className="text-gold-300">Etwas hat nicht funktioniert</h2>
         ) : !data ? (
@@ -75,7 +75,7 @@ export default function SuccessPage() {
   return (
     <Suspense
       fallback={
-        <Page title="Zahlung erfolgreich" image="icon2.png">
+        <Page title="Zahlung erfolgreich">
           <h2 className="text-gold-300">Zahlung wird bestätigt…</h2>
         </Page>
       }

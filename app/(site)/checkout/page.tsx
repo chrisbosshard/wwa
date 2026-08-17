@@ -60,7 +60,7 @@ export default function CheckoutPage() {
 
   return (
     <>
-      <Page title="Kasse" image="icon2.png">
+      <Page title="Kasse">
         <h2 className="mb-6 font-normal leading-7 text-gold-300">
           Vielen Dank, dass Sie die Weihnachtswunschaktion unterstützen. Mit Ihrer Spende erfüllen wir individuelle Weihnachtswünsche von Kindern. Sie können
           Ihre Spende von Ihren Steuern abziehen. Zu diesem Zweck erhalten Sie anfangs Jahr eine Spendenbescheinigung.

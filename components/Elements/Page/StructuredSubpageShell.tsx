@@ -14,18 +14,12 @@ export default function StructuredSubpageShell({ content, children, afterLead }:
     <>
       <Page
         title={content.title}
-        image={content.icon || undefined}
         breadcrumbs={[
           { label: "Weihnachtswunschaktion", href: "/" },
           { label: content.title },
         ]}
       >
-        <StructuredSubpage
-          content={content}
-          appState={null}
-          leadClassName={content.icon ? "pr-[clamp(4.5rem,10vw,7.5rem)]" : undefined}
-          afterLead={afterLead}
-        />
+        <StructuredSubpage content={content} appState={null} afterLead={afterLead} />
         {children}
       </Page>
       <Footer />
