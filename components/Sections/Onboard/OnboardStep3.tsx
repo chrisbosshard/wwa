@@ -77,7 +77,9 @@ const OnboardStep3 = (props) => {
     if (wishes) {
       let newWishes = [...wishes];
       if (category !== "all") {
-        newWishes = newWishes.filter((wish) => wish.category && wish.category.id === category);
+        newWishes = newWishes.filter(
+          (wish) => wish.category && String(wish.category.id) === category,
+        );
       }
       if (range !== "all") {
         newWishes = newWishes.filter((wish) => wish.ageRange < Number(range));

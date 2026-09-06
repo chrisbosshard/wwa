@@ -82,10 +82,15 @@ function CompletedBowOverlay({ kid }: { kid: { donor?: { public?: string; prenam
     );
   }
 
+  const donorName =
+    kid.donor.public === "Yes" && kid.donor.prename
+      ? kid.donor.prename
+      : "Spender";
+
   return (
     <div className="absolute z-20">
       <div className="absolute right-[8%] top-1/2 flex h-1/2 w-1/2 rotate-[12deg] items-center justify-center text-center">
-        {kid.donor.public === "Yes" ? <p className="font-handwritten text-2xl">{kid.donor.prename}</p> : null}
+        <p className="font-handwritten text-2xl">{donorName}</p>
       </div>
       <img src="/bow.png" alt="" />
     </div>

@@ -31,7 +31,7 @@ export function mapWish(wish: Wish | Record<string, unknown> | null | undefined)
     ageRange: wish.age_range,
     category:
       wish.category && typeof wish.category !== "string"
-        ? { id: wish.category.id, name: wish.category.name }
+        ? { id: String(wish.category.id), name: wish.category.name }
         : undefined,
     image: mapImage(wish.image),
   };

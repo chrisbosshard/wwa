@@ -1,4 +1,4 @@
-const DEFAULT_LIVE_PRICE_ID = "price_1JvmaHK1nNUflcljm64BPaFp";
+const DEFAULT_LIVE_PRICE_ID = "price_1JmNPZK1nNUflcljBkDquB6c";
 const DEFAULT_TEST_PRICE_ID = "price_1JmM6FK1nNUflcljYMCrKGgv";
 
 export function usesStripeTestMode() {
@@ -18,7 +18,7 @@ export function getStripePriceId() {
     return process.env.STRIPE_PRICE_ID_DEV || DEFAULT_TEST_PRICE_ID;
   }
 
-  const configuredPriceId = process.env.STRIPE_PRICE_ID || process.env.PRODUCT_ID;
+  const configuredPriceId = process.env.STRIPE_PRICE_ID;
   return configuredPriceId?.startsWith("price_")
     ? configuredPriceId
     : DEFAULT_LIVE_PRICE_ID;

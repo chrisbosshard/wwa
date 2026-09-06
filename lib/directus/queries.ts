@@ -210,6 +210,7 @@ export async function connectKidToDonor(kidId: string, donorId: string) {
     updateItem("kid", kidId, {
       donor: donorId,
       completed: true,
+      checkout: null,
     })
   );
 }

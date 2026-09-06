@@ -44,6 +44,7 @@ type CartContextValue = {
   onAddToCart: (kid: { id: string }) => Promise<void>;
   onRemoveFromCart: (id: string) => Promise<void>;
   onEmptyCart: () => void;
+  refreshKids: () => Promise<void>;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -63,54 +64,56 @@ export function CartProvider({
   const [kids, setKids] = useState<Kid[]>([]);
   const [loadingKids, setLoadingKids] = useState(true);
 
-  useEffect(() => {
-    async function loadAllKids() {
-      try {
-        let after = 0;
-        let allKids: Kid[] = [];
-        let hasNext = true;
+  const refreshKids = useCallback(async () => {
+    setLoadingKids(true);
 
-        while (hasNext) {
-          const data = await fetchKids(after, CAMPAIGN_START);
-          allKids = allKids.concat(data.connection.edges.map((item) => item.node));
-          hasNext = data.connection.pageInfo.hasNextPage;
-          after += 1000;
-        }
+    try {
+      let after = 0;
+      let allKids: Kid[] = [];
+      let hasNext = true;
 
-        let newKids: Kid[] = [];
-        const localCart = localStorage.getItem("cart") ? localStorage.getItem("cart")!.split(",") : [];
-        let newCart: string[] = [];
-
-        const cutofftime = new Date();
-        cutofftime.setMinutes(cutofftime.getMinutes() - 30);
-
-        allKids
-          .filter((kid) => kid.wish)
-          .forEach((kid) => {
-            const checkouttime = kid.checkout ? new Date(kid.checkout) : null;
-            if (!checkouttime || checkouttime <= cutofftime || kid.donor) {
-              newKids.push(kid);
-            } else {
-              const inCart = localCart.find((item) => item === kid.id);
-              if (inCart) {
-                newKids.push(kid);
-                newCart.push(kid.id);
-              }
-            }
-          });
-
-        newKids = shuffleArray(newKids);
-        setKids(newKids);
-        setCart(newCart);
-      } catch (error) {
-        console.error("Failed to load kids", error);
-      } finally {
-        setLoadingKids(false);
+      while (hasNext) {
+        const data = await fetchKids(after, CAMPAIGN_START);
+        allKids = allKids.concat(data.connection.edges.map((item) => item.node));
+        hasNext = data.connection.pageInfo.hasNextPage;
+        after += 1000;
       }
-    }
 
-    loadAllKids();
+      let newKids: Kid[] = [];
+      const localCart = localStorage.getItem("cart")?.split(",").filter(Boolean) ?? [];
+      const newCart: string[] = [];
+
+      const cutofftime = new Date();
+      cutofftime.setMinutes(cutofftime.getMinutes() - 30);
+
+      allKids
+        .filter((kid) => kid.wish)
+        .forEach((kid) => {
+          const checkouttime = kid.checkout ? new Date(kid.checkout) : null;
+          if (!checkouttime || checkouttime <= cutofftime || kid.donor) {
+            newKids.push(kid);
+          } else {
+            const inCart = localCart.find((item) => item === kid.id);
+            if (inCart) {
+              newKids.push(kid);
+              newCart.push(kid.id);
+            }
+          }
+        });
+
+      newKids = shuffleArray(newKids);
+      setKids(newKids);
+      setCart(newCart);
+    } catch (error) {
+      console.error("Failed to load kids", error);
+    } finally {
+      setLoadingKids(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void refreshKids();
+  }, [refreshKids]);
 
   useEffect(() => {
     const localCart = localStorage.getItem("cart") ? localStorage.getItem("cart")!.split(",") : [];
@@ -152,8 +155,9 @@ export function CartProvider({
       onAddToCart,
       onRemoveFromCart,
       onEmptyCart,
+      refreshKids,
     }),
-    [cart, kids, loadingKids, wishLimit, fixedWishCount, onAddToCart, onRemoveFromCart, onEmptyCart],
+    [cart, kids, loadingKids, wishLimit, fixedWishCount, onAddToCart, onRemoveFromCart, onEmptyCart, refreshKids],
   );
 
   return (

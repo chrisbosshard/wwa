@@ -20,7 +20,7 @@ import { useCart } from "@/components/providers/CartProvider";
 function SuccessContent() {
   const searchParams = useSearchParams();
   const session_id = searchParams.get("session_id");
-  const { onEmptyCart } = useCart();
+  const { onEmptyCart, refreshKids } = useCart();
   const finalized = useRef(false);
   const [finalizing, setFinalizing] = useState(true);
   const [finalizeError, setFinalizeError] = useState<string | null>(null);
@@ -67,6 +67,7 @@ function SuccessContent() {
         localStorage.removeItem("cart");
         localStorage.removeItem("donorId");
         onEmptyCart();
+        await refreshKids();
         setFinalizing(false);
       } catch (err) {
         console.error("Failed to finalize payment:", err);
@@ -78,7 +79,7 @@ function SuccessContent() {
     }
 
     void finalizePayment();
-  }, [data, onEmptyCart]);
+  }, [data, onEmptyCart, refreshKids]);
 
   const hasError = !session_id || error || finalizeError;
   const isLoading = Boolean(session_id) && !error && (!data || finalizing);
