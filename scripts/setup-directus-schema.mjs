@@ -2,6 +2,11 @@
  * Creates Directus collections matching the former Hygraph schema.
  * Run after `docker compose up -d`: npm run directus:setup
  */
+import { config } from "dotenv";
+
+config({ path: ".env.local" });
+config();
+
 const DIRECTUS_URL = process.env.DIRECTUS_URL || "http://localhost:8055";
 const ADMIN_EMAIL = process.env.DIRECTUS_ADMIN_EMAIL || "admin@caritas-zuerich.ch";
 const ADMIN_PASSWORD = process.env.DIRECTUS_ADMIN_PASSWORD || "DirectusAdmin2026!";
@@ -111,6 +116,26 @@ async function createM2OField(token, collection, field, relatedCollection, oneFi
     meta: oneField ? { one_field: oneField } : undefined,
     schema: { on_delete: "SET NULL" },
   });
+}
+
+async function ensureO2MField(token, collection, field, template) {
+  const meta = {
+    interface: "list-o2m",
+    special: ["o2m"],
+    options: { template },
+    display: "related-values",
+    display_options: { template },
+  };
+
+  try {
+    await api(token, `/fields/${collection}/${field}`, "PATCH", { meta });
+  } catch {
+    await api(token, `/fields/${collection}`, "POST", {
+      field,
+      type: "alias",
+      meta,
+    });
+  }
 }
 
 async function createFileRelation(token, collection, field) {
@@ -331,7 +356,9 @@ async function main() {
     });
   }
   await createM2OField(token, "kid", "family", "family", "kids");
+  await ensureO2MField(token, "family", "kids", "{{prename}} · {{age}} Jahre");
   await createM2OField(token, "kid", "wish", "wish", "kids");
+  await ensureO2MField(token, "wish", "kids", "{{prename}} · {{age}} Jahre");
   await createM2OField(token, "kid", "donor", "donor", "kids");
 
   // donor
@@ -439,6 +466,10 @@ async function main() {
     email: "weihnachtswunsch@caritas-zuerich.ch",
     address: "Caritas Zürich, Beckenhofstrasse 16, 8006 Zürich",
   }).catch(() => null);
+
+  console.log("Setting display templates...");
+  const { setDirectusDisplayTemplates } = await import("./set-directus-display-templates.mjs");
+  await setDirectusDisplayTemplates(token);
 
   console.log("Schema setup complete.");
 }

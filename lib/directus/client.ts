@@ -6,6 +6,7 @@ import {
   readSingleton,
   createItem,
   updateItem,
+  deleteItem,
   uploadFiles,
 } from "@directus/sdk";
 
@@ -101,5 +102,6 @@ export {
   readSingleton,
   createItem,
   updateItem,
+  deleteItem,
   uploadFiles,
 };

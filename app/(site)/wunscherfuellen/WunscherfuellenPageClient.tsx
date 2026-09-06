@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import ApplicationContext from "@context/ApplicationContext/ApplicationContext.js";
 import Polaroid from "@elements/Polaroid/Polaroid";
@@ -11,6 +11,7 @@ import { CheckboxField } from "@elements/Checkbox/CheckboxField";
 import { useCart } from "@/components/providers/CartProvider";
 import type { StructuredPageContent } from "@lib/directus/schema";
 import { resolveEffectivePageContent } from "@lib/directus/page-defaults";
+import { isGrantedWish } from "@lib/directus/progress";
 
 type Props = {
   content: StructuredPageContent;
@@ -19,11 +20,19 @@ type Props = {
 export default function WunscherfuellenPageClient({ content }: Props) {
   const { kids, cart, onAddToCart, onRemoveFromCart } = useCart();
   const [showNum, setShowNum] = useState(50);
-  const [showCompleted, setShowCompleted] = useState(false);
-  const [filteredKids, setFilteredKids] = useState(null);
+  const [hideCompleted, setHideCompleted] = useState(false);
   const { appState } = useContext(ApplicationContext);
   const router = useRouter();
   const effective = resolveEffectivePageContent(content, appState);
+  const filteredKids = useMemo(
+    () =>
+      kids.filter(
+        (kid) =>
+          kid.wish?.active &&
+          (!hideCompleted || !(kid.completed || isGrantedWish(kid))),
+      ),
+    [hideCompleted, kids],
+  );
 
   useEffect(() => {
     if (appState === "done") {
@@ -31,28 +40,17 @@ export default function WunscherfuellenPageClient({ content }: Props) {
     }
   }, [appState, router]);
 
-  useEffect(() => {
-    if (kids && kids.length > 0) {
-      setFilteredKids(kids.filter((kid) => kid.wish && kid.wish.active));
-    }
-  }, [kids]);
-
   const showMore = () => {
-    if (kids.length > showNum + 50) {
+    if (filteredKids.length > showNum + 50) {
       setShowNum(showNum + 50);
-    } else if (kids.length > showNum) {
-      setShowNum(kids.length);
+    } else if (filteredKids.length > showNum) {
+      setShowNum(filteredKids.length);
     }
   };
 
   const toggleWishes = () => {
-    const newShowCompleted = !showCompleted;
-    setShowCompleted(newShowCompleted);
-    if (newShowCompleted) {
-      setFilteredKids(kids.filter((kid) => !kid.donor && kid.wish && kid.wish.active));
-    } else {
-      setFilteredKids(kids.filter((kid) => kid.wish && kid.wish.active));
-    }
+    setHideCompleted((current) => !current);
+    setShowNum(50);
   };
 
   return (
@@ -72,19 +70,18 @@ export default function WunscherfuellenPageClient({ content }: Props) {
           <div className="mb-5 mt-8 flex w-full justify-end md:mt-10">
             <CheckboxField
               id="hideCompletedWishes"
-              checked={showCompleted}
+              checked={hideCompleted}
               onChange={toggleWishes}
               label="Bereits erfüllte Wünsche ausblenden"
               className="items-center text-[#242424]"
             />
           </div>
           <div className="mb-8 grid grid-cols-auto-md gap-6">
-            {filteredKids &&
-              filteredKids.slice(0, showNum).map((kid, index) => (
-                <Polaroid key={index} kid={kid} kids={kids} cart={cart} onAddToCart={onAddToCart} onRemoveFromCart={onRemoveFromCart} />
-              ))}
+            {filteredKids.slice(0, showNum).map((kid) => (
+              <Polaroid key={kid.id} kid={kid} kids={kids} cart={cart} onAddToCart={onAddToCart} onRemoveFromCart={onRemoveFromCart} />
+            ))}
           </div>
-          {showNum < kids.length && (
+          {showNum < filteredKids.length && (
             <Button onClick={showMore} className="mx-auto">
               Weitere Wünsche anzeigen
             </Button>

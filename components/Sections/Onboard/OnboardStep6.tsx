@@ -17,18 +17,19 @@ const Auswaehlen = (props) => {
   const [error, setError] = useState<string | null>(null);
 
   const handleConfirm = async () => {
+    if (submitting) return;
+
     setSubmitting(true);
     setError(null);
     try {
       await onNextStep();
     } catch (err) {
+      setSubmitting(false);
       setError(
         err instanceof Error
           ? err.message
           : "Die Anmeldung konnte nicht gespeichert werden. Bitte versuche es erneut.",
       );
-    } finally {
-      setSubmitting(false);
     }
   };
 

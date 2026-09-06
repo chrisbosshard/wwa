@@ -1,26 +1,29 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import axios from "axios";
-import getStripe from "@/lib/get-stripe.js";
+import { CheckCircleIcon, LockClosedIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
 import { createDonor } from "@lib/directus/api-client";
 import * as z from "zod";
 import { checkoutSchema } from "@validations/register";
-import { Field } from "@elements/TextField/TextField";
-import { Error } from "@elements/TextField/Error";
+import { FormField } from "@elements/TextField/FormField";
+import { Error as FormError } from "@elements/TextField/Error";
+import { CheckboxField } from "@elements/Checkbox/CheckboxField";
 import { Button } from "@elements/Button/Button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Page from "@elements/Page/Page";
 import Footer from "@sections/Footer/Footer";
+import { OnboardStepPanel } from "@sections/Onboard/OnboardStepPanel";
 import { useCart } from "@/components/providers/CartProvider";
+import { inlineLink } from "@/lib/ui-classes";
 
 type FormData = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
   const { cart } = useCart();
-  const [disabled, setDisabled] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -29,153 +32,246 @@ export default function CheckoutPage() {
   } = useForm<FormData>({ resolver: zodResolver(checkoutSchema) });
 
   const redirectToCheckout = async (data: FormData) => {
-    if (!disabled) {
-      setDisabled(true);
+    if (submitting) return;
+
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
       const quantity = cart.length;
 
       const payload = { ...data, zipcode: data.zipcode + "", numberOfGifts: quantity, paymentSuccessful: "No" };
+      const {
+        data: { url },
+      } = await axios.post("/api/checkout_sessions", {
+        customerEmail: data.email,
+        quantity,
+      });
+      if (!url) throw new Error("Stripe Checkout URL fehlt.");
+
       const result = await createDonor(payload);
       const donorId = result.createDonor.id;
       localStorage.setItem("donorId", donorId);
       localStorage.setItem("email", data.email);
-      const {
-        data: { id },
-      } = await axios.post("/api/checkout_sessions", {
-        customerEmail: data.email,
-        custumerId: "15",
-        items: [
-          {
-            price: "price_1JvmaHK1nNUflcljm64BPaFp",
-            quantity: quantity,
-          },
-        ],
-      });
-      const stripe = await getStripe();
-      await stripe.redirectToCheckout({ sessionId: id });
-      window.location.href = "/success";
+      window.location.assign(url);
+    } catch (error) {
+      console.error("Checkout failed:", error);
+      setSubmitError("Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.");
+      setSubmitting(false);
     }
   };
 
   const giftText = cart.length > 1 ? `${cart.length} Geschenke` : `${cart.length} Geschenk`;
+  const total = cart.length * 50;
 
   return (
     <>
-      <Page title="Kasse">
-        <h2 className="mb-6 font-normal leading-7 text-gold-300">
-          Vielen Dank, dass Sie die Weihnachtswunschaktion unterstützen. Mit Ihrer Spende erfüllen wir individuelle Weihnachtswünsche von Kindern. Sie können
-          Ihre Spende von Ihren Steuern abziehen. Zu diesem Zweck erhalten Sie anfangs Jahr eine Spendenbescheinigung.
-        </h2>
+      <Page
+        title="Kasse"
+        breadcrumbs={[
+          { label: "Weihnachtswunschaktion", href: "/" },
+          { label: "Kasse" },
+        ]}
+      >
+        <p className="mb-8 max-w-4xl text-lg leading-relaxed text-[#575656] md:mb-10 md:text-xl">
+          Vielen Dank für Ihre Unterstützung. Mit Ihrer Spende ermöglichen Sie Kindern aus finanziell benachteiligten Familien einen Weihnachtswunsch.
+        </p>
 
         {cart.length > 0 ? (
-          <>
-            <div className="mb-6 rounded-md bg-[#83a24e] p-4">
-              <h3 className="m-0 font-normal text-black">
-                Sie haben <b>{giftText}</b> in ihrem Geschenkekorb im Wert von <b>{cart.length * 50} CHF</b>
-              </h3>
-            </div>
-            <form onSubmit={handleSubmit(redirectToCheckout)} className="w-full">
-              <div className="m-auto flex w-full max-w-2xl flex-col gap-3">
-                <div className="mb-2 flex gap-3">
-                  <div className="flex cursor-pointer gap-2">
-                    <input className="cursor-pointer" type="radio" {...register("titel")} value="Frau" id="Frau" />
-                    <label className="cursor-pointer" htmlFor="Frau">
-                      Frau
-                    </label>
+          <form onSubmit={handleSubmit(redirectToCheckout)} className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-10">
+            <OnboardStepPanel>
+              <div className="mb-8 border-b border-[#EBE9E9] pb-6">
+                <p className="mb-2 text-sm font-semibold uppercase tracking-[0.08em] text-caritas-red">Ihre Angaben</p>
+                <h2 className="text-2xl font-bold text-[#242424]">Persönliche Informationen</h2>
+                <p className="mt-2 text-sm leading-relaxed text-[#575656]">
+                  Wir benötigen diese Angaben für die Spendenbestätigung.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                <fieldset>
+                  <legend className="mb-3 text-sm font-medium text-[#242424]">Anrede*</legend>
+                  <div className="flex flex-wrap gap-x-6 gap-y-3">
+                    {["Frau", "Herr", "Andere"].map((title) => (
+                      <label key={title} className="flex cursor-pointer items-center gap-2 text-[#242424]">
+                        <input
+                          className="h-5 w-5 cursor-pointer accent-caritas-red"
+                          type="radio"
+                          {...register("titel")}
+                          value={title}
+                        />
+                        {title}
+                      </label>
+                    ))}
                   </div>
-                  <div className="flex cursor-pointer gap-2">
-                    <input className="cursor-pointer" type="radio" {...register("titel")} value="Herr" id="Herr" />
-                    <label className="cursor-pointer" htmlFor="Herr">
-                      Herr
-                    </label>
-                  </div>
-                  <div className="flex cursor-pointer gap-2">
-                    <input className="cursor-pointer" type="radio" {...register("titel")} value="Andere" id="Andere" />
-                    <label className="cursor-pointer" htmlFor="Andere">
-                      Andere
-                    </label>
-                  </div>
+                  <FormError errors={errors} type="titel" />
+                </fieldset>
+
+                <div className="grid gap-5 sm:grid-cols-2">
+                  <FormField
+                    label="Vorname*"
+                    name="prename"
+                    errors={errors}
+                    autoComplete="given-name"
+                    {...register("prename")}
+                  />
+                  <FormField
+                    label="Familienname / Nachname*"
+                    name="surname"
+                    errors={errors}
+                    autoComplete="family-name"
+                    {...register("surname")}
+                  />
                 </div>
-                <Error errors={errors} type="titel" />
-                <Field label="Vorname*" {...register("prename")} />
-                <Error errors={errors} type="prename" />
-                <Field label="Familienname / Nachname*" {...register("surname")} />
-                <Error errors={errors} type="surname" />
-                <Field label="Adresse*" {...register("address")} />
-                <Error errors={errors} type="address" />
-                <div className="flex w-full flex-col justify-between gap-3 lg:flex-row">
-                  <div className="w-full">
-                    <Field label="PLZ*" {...register("zipcode")} />
-                    <Error errors={errors} type="zipcode" className="mt-3" />
-                  </div>
-                  <div className="w-full">
-                    <Field label="Wohnort*" {...register("city")} />
-                    <Error errors={errors} type="city" className="mt-3" />
-                  </div>
+
+                <FormField
+                  label="Adresse*"
+                  name="address"
+                  errors={errors}
+                  autoComplete="street-address"
+                  {...register("address")}
+                />
+
+                <div className="grid gap-5 sm:grid-cols-[0.7fr_1.3fr]">
+                  <FormField
+                    label="PLZ*"
+                    name="zipcode"
+                    errors={errors}
+                    inputMode="numeric"
+                    autoComplete="postal-code"
+                    {...register("zipcode")}
+                  />
+                  <FormField
+                    label="Wohnort*"
+                    name="city"
+                    errors={errors}
+                    autoComplete="address-level2"
+                    {...register("city")}
+                  />
                 </div>
-                <Field label="Email-Adresse*" {...register("email")} />
-                <Error errors={errors} type="email" />
-                <h3 className="mb-2 mt-4">Dürfen wir Ihren Vornamen auf unserer Webseite veröffentlichen? Bsp: Wunsch erfüllt von Erwin</h3>
-                <div className="flex gap-3">
-                  <div className="flex cursor-pointer gap-2">
-                    <input className="cursor-pointer" type="radio" {...register("public")} value="Yes" id="Ja" />
-                    <label className="cursor-pointer" htmlFor="Ja">
-                      Ja
-                    </label>
+
+                <FormField
+                  label="E-Mail-Adresse*"
+                  name="email"
+                  errors={errors}
+                  type="email"
+                  autoComplete="email"
+                  {...register("email")}
+                />
+
+                <fieldset className="border-t border-[#EBE9E9] pt-6">
+                  <legend className="mb-3 max-w-2xl text-sm font-medium leading-relaxed text-[#242424]">
+                    Dürfen wir Ihren Vornamen auf unserer Website veröffentlichen? Zum Beispiel: «Wunsch erfüllt von Erwin».
+                  </legend>
+                  <div className="flex gap-6">
+                    {[
+                      { label: "Ja", value: "Yes" },
+                      { label: "Nein", value: "No" },
+                    ].map((option) => (
+                      <label key={option.value} className="flex cursor-pointer items-center gap-2 text-[#242424]">
+                        <input
+                          className="h-5 w-5 cursor-pointer accent-caritas-red"
+                          type="radio"
+                          {...register("public")}
+                          value={option.value}
+                        />
+                        {option.label}
+                      </label>
+                    ))}
                   </div>
-                  <div className="flex cursor-pointer gap-2">
-                    <input className="cursor-pointer" type="radio" {...register("public")} value="No" id="Nein" />
-                    <label className="cursor-pointer" htmlFor="Nein">
-                      Nein
-                    </label>
-                  </div>
+                  <FormError errors={errors} type="public" />
+                </fieldset>
+
+                <div className="rounded-xl bg-[#F6F6F4] p-5">
+                  <CheckboxField
+                    id="dataRegulation"
+                    {...register("dataRegulation")}
+                    label={
+                      <>
+                        Ich akzeptiere die{" "}
+                        <a
+                          className={inlineLink}
+                          href="https://caritas-regio.ch/datenschutzbestimmungen"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Datenschutzrichtlinien
+                        </a>
+                        .
+                      </>
+                    }
+                  />
+                  <FormError errors={errors} type="dataRegulation" />
                 </div>
-                <Error errors={errors} type="public" />
-                <div className="m-auto w-full max-w-2xl">
-                  <div className="m-auto my-3 flex w-full flex-row gap-3 text-gold-300">
-                    <input type="checkbox" {...register("dataRegulation")} id="dataRegulation" className="min-w-[20px]" />
-                    <label htmlFor="dataRegulation" className="ml-2">
-                      Ich akzeptiere die{" "}
-                      <a className="underline" href="https://caritas-regio.ch/datenschutzbestimmungen" target="_blank" rel="noreferrer">
-                        Datenschutzrichtlinien
-                      </a>
-                    </label>
-                  </div>
-                  <Error errors={errors} type="dataRegulation" />
+              </div>
+            </OnboardStepPanel>
+
+            <aside className="rounded-2xl border border-[#EBE9E9] bg-white p-6 shadow-sm">
+              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-[#FEEBED] text-caritas-red">
+                <ShoppingBagIcon className="h-6 w-6" aria-hidden />
+              </div>
+              <p className="text-sm font-semibold uppercase tracking-[0.08em] text-[#575656]">Ihre Spende</p>
+              <h2 className="mt-2 text-2xl font-bold text-[#242424]">{giftText}</h2>
+
+              <div className="my-6 space-y-3 border-y border-[#EBE9E9] py-5 text-sm text-[#575656]">
+                <div className="flex items-center justify-between gap-4">
+                  <span>{giftText}</span>
+                  <span>{total} CHF</span>
+                </div>
+                <div className="flex items-center justify-between gap-4 text-lg font-bold text-[#242424]">
+                  <span>Total</span>
+                  <span>{total} CHF</span>
                 </div>
               </div>
 
-              <div className="mb-12 flex w-full flex-col justify-center lg:flex-row">
-                <Button disabled={disabled} type="submit" className="mx-0 mt-4 lg:mx-4 lg:mt-8">
-                  Wünsche erfüllen
-                </Button>
-              </div>
-            </form>
-            <h4 className="text-xs font-normal leading-relaxed text-gold-300">
-              Wenn Sie Caritas Zürich im Rahmen der Weihnachtswunschaktion finanziell unterstützen oder einen Newsletter abonnieren, entscheiden Sie sich, uns zu
-              diesen Zwecken mittels der Internet-Adressformulare persönliche Daten zu übergeben.
-              <br />
-              <br />
-              <b>
-                Ihre persönlichen Daten werden von Caritas Zürich vertraulich behandelt und nicht an Dritte weitergegeben. Aufgrund Ihrer Angaben informieren wir
-                Sie schriftlich oder elektronisch über die Aktivitäten von Caritas Zürich.
-              </b>
-              <br />
-              <br />
-              Ihre Zahlungsdaten laufen direkt über einen externen, von der Kreditkartenindustrie zertifizierten Partner. Dieser darf die Informationen
-              ausschliesslich zur Erfüllung der Zahlung nutzen und ist verpflichtet, die schweizerischen Datenschutzbestimmungen einzuhalten. <br />
-              <br />
-              Sie können Ihre Spende von Ihrem steuerbaren Einkommen abziehen. Sie erhalten dazu postalisch eine Spendenbestätigung anfangs Januar.
-            </h4>
-          </>
+              <ul className="mb-6 space-y-3 text-sm leading-relaxed text-[#575656]">
+                <li className="flex gap-2">
+                  <CheckCircleIcon className="mt-0.5 h-5 w-5 shrink-0 text-caritas-red" aria-hidden />
+                  Spendenbestätigung anfangs Jahr
+                </li>
+                <li className="flex gap-2">
+                  <LockClosedIcon className="mt-0.5 h-5 w-5 shrink-0 text-caritas-red" aria-hidden />
+                  Sichere Zahlung über Stripe
+                </li>
+              </ul>
+
+              {submitError && (
+                <p className="mb-4 rounded-lg bg-[#FEF5F5] p-3 text-sm font-medium text-caritas-red" role="alert">
+                  {submitError}
+                </p>
+              )}
+
+              <Button disabled={submitting} type="submit" className="mx-0 w-full">
+                {submitting ? "Zahlung wird vorbereitet …" : "Weiter zur Zahlung"}
+              </Button>
+            </aside>
+
+            <div className="text-sm leading-relaxed text-[#575656] lg:col-span-2">
+              <p>
+                Ihre persönlichen Daten werden von Caritas Zürich vertraulich behandelt und nicht an Dritte weitergegeben.
+                Ihre Zahlungsdaten werden direkt durch unseren zertifizierten Zahlungspartner verarbeitet.
+              </p>
+              <p className="mt-3">
+                Sie können Ihre Spende vom steuerbaren Einkommen abziehen. Die Spendenbestätigung erhalten Sie anfangs Jahr.
+              </p>
+            </div>
+          </form>
         ) : (
-          <div className="rounded-md bg-[#ebdcbe] p-4">
-            <h3 className="m-0 font-normal text-black">Sie haben keine Geschenke im Geschenkekorb</h3>
+          <div className="rounded-2xl border border-[#EBE9E9] bg-white px-6 py-10 text-center shadow-sm md:px-10 md:py-14">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#FEEBED] text-caritas-red">
+              <ShoppingBagIcon className="h-7 w-7" aria-hidden />
+            </div>
+            <h2 className="mt-5 text-2xl font-bold text-[#242424]">Ihr Geschenkekorb ist leer</h2>
+            <p className="mx-auto mt-3 max-w-xl leading-relaxed text-[#575656]">
+              Wählen Sie zuerst einen oder mehrere Weihnachtswünsche aus.
+            </p>
+            <Button innerLink="/wunscherfuellen" className="mx-0 mt-6">
+              Wünsche entdecken
+            </Button>
           </div>
         )}
       </Page>
-      <div className="px-4">
-        <Footer />
-      </div>
+      <Footer />
     </>
   );
 }

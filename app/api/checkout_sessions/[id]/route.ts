@@ -1,18 +1,23 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2022-11-15",
-});
+import { getStripeSecretKey } from "@/lib/stripe-config";
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    const secretKey = getStripeSecretKey();
 
     if (!id.startsWith("cs_")) {
       throw new Error("Incorrect CheckoutSession ID.");
     }
+    if (!secretKey) {
+      return NextResponse.json(
+        { message: "Stripe ist nicht konfiguriert." },
+        { status: 503 },
+      );
+    }
 
+    const stripe = new Stripe(secretKey, { apiVersion: "2022-11-15" });
     const checkout_session = await stripe.checkout.sessions.retrieve(id);
     return NextResponse.json(checkout_session);
   } catch (err) {

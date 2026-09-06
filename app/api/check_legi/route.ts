@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
-import { HttpsProxyAgent } from "https-proxy-agent";
 
 const CARD_URL = "https://cwebplus.ch/Prod/Kule/api/1.0/de/Card";
 const REGIONS = ["ZH", "SH"] as const;
@@ -12,10 +10,20 @@ const authHeader = {
     "Bearer K/0Lw0ehOifVlesjTxhi0T2zu5Bd4KO0kNws6S0Hby+GK4mUEgz6TqtnR64VaqfRhRJw8APm3NK0t1LKOFddbWoJ72hH0+h8fzWSdm1b0TbPxYezpr7ETgxFkUCsxY+VdQXIn/EZ0WAkaAQm1RWxGPSDRe9m2+1yiCI2mwxICfI=",
 };
 
+class CardRequestError extends Error {
+  status?: number;
+
+  constructor(message: string, status?: number) {
+    super(message);
+    this.status = status;
+  }
+}
+
 function isUnavailable(err: unknown) {
-  if (!axios.isAxiosError(err)) return true;
-  const status = err.response?.status;
-  return !status || status === 407 || status >= 500;
+  if (err instanceof CardRequestError) {
+    return !err.status || err.status === 407 || err.status >= 500;
+  }
+  return true;
 }
 
 function publicCardData(data: unknown) {
@@ -30,6 +38,14 @@ function publicCardData(data: unknown) {
   };
 }
 
+function cardUrl(rco: string, persNb: string, isoDate: string, dateParam: (typeof DATE_PARAMS)[number]) {
+  const url = new URL(CARD_URL);
+  url.searchParams.set("RCO", rco);
+  url.searchParams.set("PersNb", persNb);
+  url.searchParams.set(dateParam, `${isoDate} 00:00:00`);
+  return url;
+}
+
 async function fetchCard(
   rco: string,
   persNb: string,
@@ -37,18 +53,39 @@ async function fetchCard(
   dateParam: (typeof DATE_PARAMS)[number],
   proxyUrl?: string,
 ) {
-  return axios.get(CARD_URL, {
+  const url = cardUrl(rco, persNb, isoDate, dateParam);
+
+  if (proxyUrl) {
+    const [{ default: axios }, { HttpsProxyAgent }] = await Promise.all([
+      import("axios"),
+      import("https-proxy-agent"),
+    ]);
+    try {
+      return await axios.get(url.toString(), {
+        headers: authHeader,
+        timeout: 15000,
+        httpsAgent: new HttpsProxyAgent(proxyUrl),
+        proxy: false,
+      });
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        throw new CardRequestError(err.message, err.response?.status);
+      }
+      throw err;
+    }
+  }
+
+  const response = await fetch(url, {
     headers: authHeader,
-    params: {
-      RCO: rco,
-      PersNb: persNb,
-      [dateParam]: `${isoDate} 00:00:00`,
-    },
-    timeout: 15000,
-    ...(proxyUrl
-      ? { httpsAgent: new HttpsProxyAgent(proxyUrl), proxy: false as const }
-      : {}),
+    cache: "no-store",
+    signal: AbortSignal.timeout(15000),
   });
+
+  if (!response.ok) {
+    throw new CardRequestError(`Request failed with status code ${response.status}`, response.status);
+  }
+
+  return { status: response.status, data: await response.json() };
 }
 
 async function lookupCard(persNb: string, isoDate: string, proxyUrl?: string) {

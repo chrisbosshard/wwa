@@ -8,7 +8,11 @@ import Hero from "@sections/Hero/Hero";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCart } from "@/components/providers/CartProvider";
-import { buttonContainer, link, linkContainer } from "@/lib/ui-classes";
+import { buttonContainer, linkContainer } from "@/lib/ui-classes";
+
+function compareFamilyIds(a: string | number, b: string | number) {
+  return Number(b) - Number(a);
+}
 
 export default function AdminPage() {
   const { kids } = useCart();
@@ -23,7 +27,7 @@ export default function AdminPage() {
     if (kids) {
       const typedKids = kids as Array<{
         family?: {
-          id: string;
+          id: string | number;
           prename: string;
           surname: string;
           street: string;
@@ -55,7 +59,7 @@ export default function AdminPage() {
       const newKids = typedKids.filter((kid) => kid.family).slice();
 
       const sortedKids = newKids.sort((a, b) => {
-        return b.family.id.localeCompare(a.family.id);
+        return compareFamilyIds(a.family!.id, b.family!.id);
       });
 
       const newTable: (string | boolean)[][] = [
@@ -153,7 +157,7 @@ export default function AdminPage() {
   };
 
   const generateCode = async () => {
-    let familyCurrent = "";
+    let familyCurrent: string | number = "";
     let familyCount = 0;
     let kidCountVersandGutschein = 0;
     let kidCountVersandPaket = 0;
@@ -169,14 +173,14 @@ export default function AdminPage() {
     const filterWinterthur = [8400,8401, 8403, 8404, 8405, 8406, 8408, 8409, 8424, 8427, 8311,8471,8421,8474,8353,8548,8352,8442,8413,8422,8545,8418,8472,8542] // prettier-ignore
 
     const typedKids = kids as Array<{
-      family?: { id: string; zipcode: string };
+      family?: { id: string | number; zipcode: string };
       wish?: { voucher: boolean };
       id: string;
     }>;
     const newKids = typedKids.filter((kid) => kid.family).slice();
 
     const sortedKids = newKids.sort((a, b) => {
-      return b.family.id.localeCompare(a.family.id);
+      return compareFamilyIds(a.family!.id, b.family!.id);
     });
 
     const codes = [];
@@ -329,23 +333,21 @@ export default function AdminPage() {
             <Input id="admin-password" value={password ?? ""} onChange={handlePassword} type="password" />
           </div>
           {message && <h3>{message}</h3>}
-          <div className={linkContainer} onClick={checkPassword}>
-            <a className={link}>Login</a>
-          </div>
+          <button type="button" className={linkContainer} onClick={checkPassword}>
+            Login
+          </button>
         </div>
       )}
       <div className="details" style={{ display: loggedIn ? "block" : "none" }}>
         {table && (
           <div style={{ textAlign: "center" }}>
             <div className={buttonContainer}>
-              <CSVLink data={table}>
-                <div className={linkContainer}>
-                  <a className={link}>Liste Herunterladen</a>
-                </div>
+              <CSVLink data={table} className={linkContainer} filename="weihnachtswunsch-anmeldungen.csv">
+                Liste Herunterladen
               </CSVLink>
-              <div className={linkContainer} onClick={generateCode} style={{ marginLeft: "1rem" }}>
-                <a className={link}>Code Generieren</a>
-              </div>
+              <button type="button" className={linkContainer} onClick={generateCode}>
+                Code Generieren
+              </button>
             </div>
             {num > 0 && (
               <h3>

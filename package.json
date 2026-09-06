@@ -25,7 +25,8 @@
     "directus:fixed-wish-count": "node scripts/add-fixed-wish-count.mjs",
     "directus:sponsor-fields": "node scripts/add-sponsor-fields.mjs",
     "directus:sponsor-logos": "node scripts/upload-sponsor-logos.mjs",
-    "directus:fix-sponsor": "node scripts/fix-sponsor-directus.mjs"
+    "directus:fix-sponsor": "node scripts/fix-sponsor-directus.mjs",
+    "directus:display-templates": "node scripts/set-directus-display-templates.mjs"
   },
   "dependencies": {
     "@directus/sdk": "^18.0.3",

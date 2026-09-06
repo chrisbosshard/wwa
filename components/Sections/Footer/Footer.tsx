@@ -53,7 +53,7 @@ const Footer = ({ topSponsors, otherSponsors }: Props) => {
   const showDivider = top.length > 0 && others.length > 0;
 
   return (
-    <footer className="relative left-1/2 right-1/2 w-screen max-w-none -translate-x-1/2 bg-[#242424] text-white">
+    <footer className="relative left-1/2 right-1/2 w-screen max-w-none -translate-x-1/2 border-t-[4rem] border-white bg-[#242424] text-white">
       <div className="mx-auto max-w-[1200px] px-4">
         <div className="grid gap-10 py-12 lg:grid-cols-2 lg:gap-16 lg:py-16">
           <div>

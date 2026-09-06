@@ -1,16 +1,16 @@
 import * as z from "zod";
 
 export const checkoutSchema = z.object({
-  titel: z.union([z.string(), z.null()]).refine((val) => val != null, { message: "Titel fehlt" }), // Modified line
+  titel: z.union([z.string(), z.null()]).refine((val) => val != null, { message: "Anrede fehlt" }),
   prename: z.string().min(1, { message: "Vorname fehlt" }),
   surname: z.string().min(1, { message: "Nachname fehlt" }),
-  address: z.string().min(1, { message: "Addresse fehlt" }),
+  address: z.string().min(1, { message: "Adresse fehlt" }),
   zipcode: z.preprocess(
     (a) => parseInt(a as string),
     z.number({ invalid_type_error: "Ungültige Postleitzahl" }).min(1000, { message: "Ungültige Postleitzahl" }).max(9999, { message: "Ungültige Postleitzahl" })
   ),
   city: z.string().min(1, { message: "Stadt fehlt" }),
-  email: z.string().email({ message: "Email-Format ist inkorrekt" }),
+  email: z.string().email({ message: "E-Mail-Format ist inkorrekt" }),
   public: z.union([z.string(), z.null()]).refine((val) => val != null, { message: "Angabe fehlt" }),
   dataRegulation: z.boolean().refine((value) => value === true, {
     message: "Zustimmung muss gegeben werden um weiterzufahren",

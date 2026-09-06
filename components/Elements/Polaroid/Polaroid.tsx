@@ -8,6 +8,7 @@ import { Button } from "@elements/Button/Button";
 import { selectionGlow } from "@/lib/ui-classes";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { isGrantedWish } from "@lib/directus/progress";
 
 const wishCardShell =
   "rounded-lg border border-gray-200 bg-white shadow-sm";
@@ -24,6 +25,7 @@ function WishCardContent({
   picture,
   titleAs = "h2",
   interactive = false,
+  subdued = false,
   variant = "grid",
   className,
 }: {
@@ -35,6 +37,7 @@ function WishCardContent({
   picture: string;
   titleAs?: "h2" | "dialog";
   interactive?: boolean;
+  subdued?: boolean;
   variant?: "grid" | "dialog";
   className?: string;
 }) {
@@ -47,6 +50,7 @@ function WishCardContent({
           fill
           className={cn(
             "object-contain",
+            subdued && "opacity-70 saturate-50",
             interactive && "transition-transform duration-200 ease-out group-hover:scale-105",
           )}
           sizes="(max-width: 768px) 100vw, 300px"
@@ -112,7 +116,7 @@ const Polaroid = (props) => {
   };
 
   const kidStyle = cart.includes(kid.id) ? selectionGlow : "";
-  const completed = kid.donor && (kid.donor.manualUpload || kid.donor.paymentSuccessful);
+  const completed = Boolean(kid.completed || isGrantedWish(kid));
 
   let article = "ein";
   if (kid.wish.article === "Der") {
@@ -145,14 +149,17 @@ const Polaroid = (props) => {
     <>
       <div
         className={cn(
-          "wish-card group relative h-full w-full cursor-pointer transition-all duration-200 ease-out hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.1)]",
+          "wish-card group relative h-full w-full cursor-pointer transition-all duration-200 ease-out",
           wishCardShell,
+          completed
+            ? "border-[#e7d8cf] bg-[linear-gradient(135deg,#ffe4e7_0%,#fff1bd_50%,#dff2ec_100%)] shadow-none hover:border-[#d8c5ba]"
+            : "hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.1)]",
           kidStyle,
         )}
         onClick={() => setOpen(true)}
       >
         {completed ? <CompletedBowOverlay kid={kid} /> : null}
-        <WishCardContent kid={kid} picture={picture} interactive />
+        <WishCardContent kid={kid} picture={picture} interactive={!completed} subdued={completed} />
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>

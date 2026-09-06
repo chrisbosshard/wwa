@@ -6,6 +6,7 @@ import {
   readSingleton,
   createItem,
   updateItem,
+  deleteItem,
 } from "./client";
 import { mapKid, mapWish } from "./transform";
 import type { LegacyKid, LegacyKidsConnection, LegacyWishesResponse, Category } from "./schema";
@@ -227,43 +228,113 @@ export async function createWish(data: Record<string, unknown>) {
   );
 }
 
+const DUPLICATE_WINDOW_MS = 15 * 60 * 1000;
+
+function kidFingerprint(kid: { prename: string; age: number }) {
+  return `${String(kid.prename).trim().toLowerCase()}:${kid.age}`;
+}
+
+async function findRecentDuplicateFamily(
+  client: ReturnType<typeof createDirectusClient>,
+  familyData: Record<string, unknown>,
+  kids: { prename: string; age: number; wishId: string }[]
+) {
+  const email = String(familyData.email || "").trim().toLowerCase();
+  const leginr = String(familyData.leginr || "").trim();
+  if (!email || !leginr) return null;
+
+  const since = new Date(Date.now() - DUPLICATE_WINDOW_MS).toISOString();
+  const requested = new Set(kids.map(kidFingerprint));
+
+  const existingFamilies = await client.request(
+    readItems("family", {
+      filter: {
+        email: { _eq: familyData.email },
+        leginr: { _eq: leginr },
+        date_created: { _gte: since },
+      },
+      fields: ["id", "kids.prename", "kids.age"],
+      limit: 5,
+    })
+  );
+
+  for (const existing of existingFamilies) {
+    const existingKids = new Set((existing.kids || []).map(kidFingerprint));
+    if (existingKids.size !== requested.size) continue;
+    const isMatch = [...requested].every((key) => existingKids.has(key));
+    if (isMatch) return existing;
+  }
+
+  return null;
+}
+
 export async function createFamilyWithKids(
   familyData: Record<string, unknown>,
   kids: { prename: string; age: number; wishId: string }[],
   imageId?: string | null
 ) {
-  const client = createDirectusClient();
-  const family = await client.request(
-    createItem("family", {
-      prename: familyData.prename,
-      surname: familyData.surname,
-      street: familyData.street,
-      nr: familyData.nr,
-      zipcode: familyData.zipcode,
-      city: familyData.city,
-      email: familyData.email,
-      phone: familyData.phone,
-      comment: familyData.comment,
-      leginr: familyData.leginr,
-      origin: familyData.origin,
-      contact_permission: familyData.contactPermission,
-      image: imageId || null,
-    })
-  );
-
-  for (const kid of kids) {
-    await client.request(
-      createItem("kid", {
-        prename: kid.prename,
-        age: kid.age,
-        active: true,
-        family: family.id,
-        wish: kid.wishId,
-      })
-    );
+  if (!Array.isArray(kids) || kids.length === 0) {
+    throw new Error("At least one child is required");
   }
 
-  return family;
+  for (const kid of kids) {
+    if (!kid.prename || kid.age == null || !kid.wishId) {
+      throw new Error("Each child must have a name, age, and wish");
+    }
+  }
+
+  const client = createDirectusClient();
+  const duplicate = await findRecentDuplicateFamily(client, familyData, kids);
+  if (duplicate) {
+    return duplicate;
+  }
+
+  const createdKidIds: Array<string | number> = [];
+  let familyId: string | number | null = null;
+
+  try {
+    const family = await client.request(
+      createItem("family", {
+        prename: familyData.prename,
+        surname: familyData.surname,
+        street: familyData.street,
+        nr: familyData.nr,
+        zipcode: familyData.zipcode,
+        city: familyData.city,
+        email: familyData.email,
+        phone: familyData.phone,
+        comment: familyData.comment,
+        leginr: familyData.leginr,
+        origin: familyData.origin,
+        contact_permission: familyData.contactPermission,
+        image: imageId || null,
+      })
+    );
+    familyId = family.id;
+
+    for (const kid of kids) {
+      const createdKid = await client.request(
+        createItem("kid", {
+          prename: kid.prename,
+          age: kid.age,
+          active: true,
+          family: family.id,
+          wish: kid.wishId,
+        })
+      );
+      createdKidIds.push(createdKid.id);
+    }
+
+    return family;
+  } catch (error) {
+    for (const kidId of [...createdKidIds].reverse()) {
+      await client.request(deleteItem("kid", kidId)).catch(() => undefined);
+    }
+    if (familyId != null) {
+      await client.request(deleteItem("family", familyId)).catch(() => undefined);
+    }
+    throw error;
+  }
 }
 
 export async function updateKid(id: string, data: Record<string, unknown>) {

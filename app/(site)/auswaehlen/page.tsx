@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import OnboardStep1 from "@sections/Onboard/OnboardStep1";
 import OnboardStep1a from "@sections/Onboard/OnboardStep1a";
 import OnboardStep2 from "@sections/Onboard/OnboardStep2";
@@ -24,6 +24,7 @@ export default function AuswaehlenPage() {
   const [contact, setContact] = useState({ leginr: "", image: null, imageName: "" });
   const [note, setNote] = useState({ note: "", contactPermission: null, dataRegulation: null, origin: "" });
   const [data, setData] = useState({});
+  const registrationSubmitted = useRef(false);
   const { appState } = useContext(ApplicationContext);
 
   const toAlternateStep = (value) => {
@@ -67,6 +68,11 @@ export default function AuswaehlenPage() {
   };
 
   const toStep7 = async () => {
+    if (registrationSubmitted.current) {
+      return;
+    }
+    registrationSubmitted.current = true;
+
     const familyPayload = {
       ...data,
       kids: null,
@@ -81,6 +87,7 @@ export default function AuswaehlenPage() {
     try {
       await createFamily(familyPayload, kidsData, contact.image || null);
     } catch (error) {
+      registrationSubmitted.current = false;
       console.error("Failed to create family:", error);
       throw new Error("Die Anmeldung konnte nicht gespeichert werden. Bitte versuche es erneut.");
     }

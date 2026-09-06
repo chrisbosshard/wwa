@@ -13,6 +13,7 @@ const ADMIN_EMAIL = process.env.DIRECTUS_ADMIN_EMAIL || "admin@caritas-zuerich.c
 const ADMIN_PASSWORD = process.env.DIRECTUS_ADMIN_PASSWORD || "DirectusAdmin2026!";
 
 const EDITOR_COLLECTIONS = ["page", "page_section", "page_state_block", "page_button", "sponsor", "global_setting", "wish", "category", "application", "campaign_content"];
+const EDITOR_READ_COLLECTIONS = ["kid"];
 const PUBLIC_READ_COLLECTIONS = [
   "application",
   "campaign_content",
@@ -138,6 +139,11 @@ async function main() {
       await setPolicyPermission(token, editorPolicyId, collection, action);
     }
     console.log(`  ✓ Redakteur ${collection}`);
+  }
+
+  for (const collection of EDITOR_READ_COLLECTIONS) {
+    await setPolicyPermission(token, editorPolicyId, collection, "read");
+    console.log(`  ✓ Redakteur ${collection} (read)`);
   }
 
   console.log("\nSetting up Redakteur file library access...");
