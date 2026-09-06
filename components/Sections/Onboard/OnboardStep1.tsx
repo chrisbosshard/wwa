@@ -8,7 +8,7 @@ import {
   onboardStepDescription,
   onboardStepTitle,
 } from "@sections/Onboard/OnboardStepPanel";
-import { OnboardLegiInvalidAlert } from "@sections/Onboard/OnboardLegiInvalidAlert";
+import { OnboardLegiInvalidAlert, OnboardLegiUnavailableAlert } from "@sections/Onboard/OnboardLegiInvalidAlert";
 
 // IMPORT COMPONENTS
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +31,7 @@ const OnBoardStep1 = (props) => {
   const { onNextStep, onAlternateStep, contact, waitinglist } = props;
 
   // STATE
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<"invalid" | "unavailable" | null>(null);
 
   // FORM
   const {register, handleSubmit, formState: { errors },} = useForm<FormData>({defaultValues:contact, resolver: zodResolver(step1Schema)}); // prettier-ignore
@@ -42,6 +42,7 @@ const OnBoardStep1 = (props) => {
       leginr: data.leginr,
       expiresAt: data.expiresAt,
     };
+    setError(null);
     const res = await fetch("/api/check_legi", {
       method: "POST",
       headers: {
@@ -53,8 +54,10 @@ const OnBoardStep1 = (props) => {
 
     if (response.success && response.data && response.data.Valid) {
       onNextStep(info);
+    } else if (response.error === "unavailable") {
+      setError("unavailable");
     } else {
-      setError(true);
+      setError("invalid");
     }
     // onNextStep(info);
   };
@@ -77,7 +80,8 @@ const OnBoardStep1 = (props) => {
           </p>
         </>
       )}
-      {error && <OnboardLegiInvalidAlert />}
+      {error === "unavailable" && <OnboardLegiUnavailableAlert />}
+      {error === "invalid" && <OnboardLegiInvalidAlert />}
 
       <form onSubmit={handleSubmit(checkEntries)} className="w-full">
         <div className={onboardFormFields}>

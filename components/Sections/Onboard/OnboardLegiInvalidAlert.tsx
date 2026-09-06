@@ -7,6 +7,23 @@ export const onboardStepAlert =
 
 const listStyles = cmsAlphaList;
 
+export function OnboardLegiUnavailableAlert({ className }: { className?: string }) {
+  return (
+    <div className={cn(onboardStepAlert, className)} role="alert">
+      <div className="flex gap-4 md:gap-5">
+        <ExclamationCircleIcon className="mt-0.5 h-7 w-7 shrink-0 text-caritas-red md:h-8 md:w-8" aria-hidden />
+        <div className="min-w-0 flex-1">
+          <p className="text-base font-bold text-[#242424] md:text-lg">Die KulturLegi-Prüfung ist gerade nicht möglich</p>
+          <p className="mt-2 text-sm leading-relaxed text-[#575656] md:text-[0.9375rem]">
+            Die Verbindung zur KulturLegi-Prüfung ist fehlgeschlagen. Bitte versuche es in ein paar Minuten erneut. Deine Angaben wurden nicht
+            abgelehnt — wir konnten sie nur nicht prüfen.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function OnboardLegiInvalidAlert({ className }: { className?: string }) {
   return (
     <div className={cn(onboardStepAlert, className)} role="alert">

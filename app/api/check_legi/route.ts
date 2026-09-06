@@ -2,48 +2,110 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import { HttpsProxyAgent } from "https-proxy-agent";
 
-const proxyUrl =
-  "http://customer-wwacaritas_SRJ92-cc-ch-sessid-0235665092-sesstime-10:Weihnacht_Caritas_WWA11@pr.oxylabs.io:7777";
-const agent = new HttpsProxyAgent(proxyUrl);
+const CARD_URL = "https://cwebplus.ch/Prod/Kule/api/1.0/de/Card";
+const REGIONS = ["ZH", "SH"] as const;
+const DATE_PARAMS = ["ExpiresAt", "Birthdate"] as const;
 
 const authHeader = {
   Authorization:
+    process.env.CWEBPLUS_TOKEN ||
     "Bearer K/0Lw0ehOifVlesjTxhi0T2zu5Bd4KO0kNws6S0Hby+GK4mUEgz6TqtnR64VaqfRhRJw8APm3NK0t1LKOFddbWoJ72hH0+h8fzWSdm1b0TbPxYezpr7ETgxFkUCsxY+VdQXIn/EZ0WAkaAQm1RWxGPSDRe9m2+1yiCI2mwxICfI=",
 };
+
+function isUnavailable(err: unknown) {
+  if (!axios.isAxiosError(err)) return true;
+  const status = err.response?.status;
+  return !status || status === 407 || status >= 500;
+}
+
+function publicCardData(data: unknown) {
+  if (!data || typeof data !== "object") return data;
+  const card = data as Record<string, unknown>;
+  return {
+    RCO: card.RCO,
+    PersNb: card.PersNb,
+    CardNo: card.CardNo,
+    ExpiresAt: card.ExpiresAt,
+    Valid: card.Valid,
+  };
+}
+
+async function fetchCard(
+  rco: string,
+  persNb: string,
+  isoDate: string,
+  dateParam: (typeof DATE_PARAMS)[number],
+  proxyUrl?: string,
+) {
+  return axios.get(CARD_URL, {
+    headers: authHeader,
+    params: {
+      RCO: rco,
+      PersNb: persNb,
+      [dateParam]: `${isoDate} 00:00:00`,
+    },
+    timeout: 15000,
+    ...(proxyUrl
+      ? { httpsAgent: new HttpsProxyAgent(proxyUrl), proxy: false as const }
+      : {}),
+  });
+}
+
+async function lookupCard(persNb: string, isoDate: string, proxyUrl?: string) {
+  const via = proxyUrl ? "proxy" : "direct";
+  let unavailable = false;
+
+  for (const rco of REGIONS) {
+    for (const dateParam of DATE_PARAMS) {
+      try {
+        const response = await fetchCard(rco, persNb, isoDate, dateParam, proxyUrl);
+        if (response.status === 200) {
+          console.log(`✅ ${rco}/${dateParam} (${via})`);
+          return { found: true as const, data: response.data };
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        console.log(`❌ ${rco}/${dateParam} (${via}): ${message}`);
+        if (isUnavailable(err)) unavailable = true;
+      }
+    }
+  }
+
+  return { found: false as const, unavailable };
+}
 
 export async function POST(request: Request) {
   const body = await request.json();
   const info = body.info;
-  const dateParts = info.expiresAt.slice().split(".");
+  const dateParts = String(info?.expiresAt || "").split(".");
   const newDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
+  const persNb = String(info?.leginr || "").trim();
 
-  try {
-    const response = await axios.get(
-      `https://cwebplus.ch/Prod/Kule/api/1.0/de/Card?RCO=ZH&PersNb=${info.leginr}&ExpiresAt=${newDate} 00%3A00%3A00`,
-      { headers: authHeader, httpsAgent: agent },
-    );
-    if (response.status !== 200) {
-      return NextResponse.json({ success: false });
-    }
-    console.log("✅ 1. Try: Success");
-    return NextResponse.json({ success: true, data: response.data });
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    console.log(`❌ 1. Try: ${message}`);
-    try {
-      const response2 = await axios.get(
-        `https://cwebplus.ch/Prod/Kule/api/1.0/de/Card?RCO=SH&PersNb=${info.leginr}&ExpiresAt=${newDate} 00%3A00%3A00`,
-        { headers: authHeader, httpsAgent: agent },
-      );
-      if (response2.status !== 200) {
-        return NextResponse.json({ success: false });
-      }
-      console.log("✅ 2. Try: Success");
-      return NextResponse.json({ success: true, data: response2.data });
-    } catch (err2) {
-      const message2 = err2 instanceof Error ? err2.message : "Unknown error";
-      console.log(`❌ 2. Try: ${message2}`);
-      return NextResponse.json({ success: false });
-    }
+  if (!persNb || dateParts.length !== 3) {
+    return NextResponse.json({ success: false, error: "invalid" });
   }
+
+  const preferProxy = process.env.CWEBPLUS_PREFER_PROXY === "1";
+  const proxyUrl = process.env.CWEBPLUS_PROXY_URL;
+
+  const first = await lookupCard(persNb, newDate, preferProxy ? proxyUrl : undefined);
+  if (first.found) {
+    return NextResponse.json({ success: true, data: publicCardData(first.data) });
+  }
+
+  if (proxyUrl && !preferProxy && first.unavailable) {
+    const proxied = await lookupCard(persNb, newDate, proxyUrl);
+    if (proxied.found) {
+      return NextResponse.json({ success: true, data: publicCardData(proxied.data) });
+    }
+    return NextResponse.json({
+      success: false,
+      error: proxied.unavailable ? "unavailable" : "invalid",
+    });
+  }
+
+  return NextResponse.json({
+    success: false,
+    error: first.unavailable ? "unavailable" : "invalid",
+  });
 }
