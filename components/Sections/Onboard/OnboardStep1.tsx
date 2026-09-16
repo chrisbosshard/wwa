@@ -62,13 +62,6 @@ const OnBoardStep1 = (props) => {
     // onNextStep(info);
   };
 
-  const skipTest = () => {
-    onNextStep({
-      leginr: contact.leginr || "TEST-0001",
-      expiresAt: contact.expiresAt || "31.12.2029",
-    });
-  };
-
   // RETURN
   return (
     <>
@@ -91,9 +84,6 @@ const OnBoardStep1 = (props) => {
         <div className={onboardFormActions}>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Button type="submit">{waitinglist ? "Zur Warteliste" : "Prüfen"}</Button>
-            <Button type="button" color="outline" onClick={skipTest}>
-              Skip (Test)
-            </Button>
           </div>
           <Link className={inlineLink} href="/legihelp">
             Ich brauche Hilfe
