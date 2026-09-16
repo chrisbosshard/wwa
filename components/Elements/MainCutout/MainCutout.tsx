@@ -7,12 +7,7 @@ type Props = {
 
 const MainCutout = ({ breadcrumbs, children }: Props) => {
   return (
-    <section className="relative z-10 -mt-[16rem]">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-0 left-1/2 top-[7rem] -z-0 -ml-[50vw] w-screen bg-white"
-      />
-
+    <section className="relative z-10 -mt-[16rem] min-h-[16rem] bg-[linear-gradient(to_bottom,transparent_7rem,white_7rem)]">
       <div className="relative z-[1] mx-auto max-w-[77rem] px-4 pt-8 md:px-8 md:pt-10">
         <Breadcrumb items={breadcrumbs} />
       </div>

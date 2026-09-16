@@ -62,29 +62,45 @@
   }
 
   .cms-html li {
+    display: list-item;
     line-height: 1.65;
     color: #575656;
   }
 
   .cms-html ol,
+  .cms-html ul,
   .cms-html .cms-alpha-list,
   .cms-alpha-list {
     margin-top: 1.5rem;
-    list-style-type: lower-alpha;
     list-style-position: outside;
-    padding-left: 1.25rem;
+    padding-left: 1.5rem;
     font-size: 0.875rem;
     line-height: 1.625;
     color: #575656;
   }
 
+  .cms-html ol {
+    list-style: decimal outside;
+  }
+
+  .cms-html ul {
+    list-style: disc outside;
+  }
+
+  .cms-html .cms-alpha-list,
+  .cms-alpha-list {
+    list-style: lower-alpha outside;
+  }
+
   .cms-html ol > li + li,
+  .cms-html ul > li + li,
   .cms-html .cms-alpha-list > li + li,
   .cms-alpha-list > li + li {
     margin-top: 0.75rem;
   }
 
   .cms-html ol ::marker,
+  .cms-html ul ::marker,
   .cms-html .cms-alpha-list ::marker,
   .cms-alpha-list ::marker {
     font-weight: 600;
@@ -93,9 +109,10 @@
 
   @media (min-width: 768px) {
     .cms-html ol,
+    .cms-html ul,
     .cms-html .cms-alpha-list,
     .cms-alpha-list {
-      padding-left: 1.5rem;
+      padding-left: 1.75rem;
       font-size: 0.9375rem;
     }
   }

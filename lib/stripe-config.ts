@@ -1,4 +1,4 @@
-const DEFAULT_LIVE_PRICE_ID = "price_1JmNPZK1nNUflcljBkDquB6c";
+const DEFAULT_LIVE_PRICE_ID = "price_1JvmaHK1nNUflcljm64BPaFp";
 const DEFAULT_TEST_PRICE_ID = "price_1JmM6FK1nNUflcljYMCrKGgv";
 
 export function usesStripeTestMode() {
@@ -8,9 +8,7 @@ export function usesStripeTestMode() {
 }
 
 export function getStripeSecretKey() {
-  return usesStripeTestMode()
-    ? process.env.STRIPE_SECRET_KEY_DEV
-    : process.env.STRIPE_SECRET_KEY;
+  return usesStripeTestMode() ? process.env.STRIPE_SECRET_KEY_DEV : process.env.STRIPE_SECRET_KEY;
 }
 
 export function getStripePriceId() {
@@ -19,13 +17,9 @@ export function getStripePriceId() {
   }
 
   const configuredPriceId = process.env.STRIPE_PRICE_ID;
-  return configuredPriceId?.startsWith("price_")
-    ? configuredPriceId
-    : DEFAULT_LIVE_PRICE_ID;
+  return configuredPriceId?.startsWith("price_") ? configuredPriceId : DEFAULT_LIVE_PRICE_ID;
 }
 
 export function getStripeWebhookSecret() {
-  return usesStripeTestMode()
-    ? process.env.STRIPE_WEBHOOK_SECRET_DEV
-    : process.env.STRIPE_WEBHOOK_SECRET;
+  return usesStripeTestMode() ? process.env.STRIPE_WEBHOOK_SECRET_DEV : process.env.STRIPE_WEBHOOK_SECRET;
 }

@@ -30,22 +30,25 @@ function stripPillBadges(html: string) {
 const pillParagraphRegex =
   /<p([^>]*)>\s*<span([^>]*)>\s*([a-z])\s*<\/span>\s*([\s\S]*?)<\/p>/gi;
 
-function ensureAlphaListClass(html: string) {
-  return html.replace(/<ol(\s[^>]*)?>/gi, (match, attributes = "") => {
-    if (/cms-alpha-list/.test(attributes)) {
-      return match;
-    }
+function stripListItemLayoutClasses(html: string) {
+  return html.replace(/<li(\s[^>]*)?>/gi, (match, attributes = "") => {
+    if (!attributes) return match;
 
-    if (/class="/i.test(attributes)) {
-      return match.replace(/class="([^"]*)"/i, 'class="$1 cms-alpha-list"');
-    }
+    const next = attributes
+      .replace(/\sstyle="[^"]*display\s*:\s*flex[^"]*"/gi, "")
+      .replace(/\b(?:inline-)?flex\b/g, "")
+      .replace(/\bgap-[^\s"]+/g, "")
+      .replace(/\bitems-[^\s"]+/g, "")
+      .replace(/\s+/g, " ")
+      .replace(/\sclass="\s*"/gi, "")
+      .trimEnd();
 
-    return `<ol class="cms-alpha-list"${attributes}>`;
+    return `<li${next}>`;
   });
 }
 
 function normalizeCmsLists(html: string) {
-  const withoutInlineBadges = stripPillBadges(html);
+  const withoutInlineBadges = stripListItemLayoutClasses(stripPillBadges(html));
 
   const pillParagraphs = [...withoutInlineBadges.matchAll(pillParagraphRegex)].filter((match) =>
     isPillBadgeSpan(match[2]),
@@ -59,10 +62,10 @@ function normalizeCmsLists(html: string) {
     const lastMatch = pillParagraphs[pillParagraphs.length - 1];
     const lastEnd = (lastMatch.index ?? 0) + lastMatch[0].length;
 
-    return ensureAlphaListClass(withoutInlineBadges.slice(0, firstStart) + listHtml + withoutInlineBadges.slice(lastEnd));
+    return withoutInlineBadges.slice(0, firstStart) + listHtml + withoutInlineBadges.slice(lastEnd);
   }
 
-  return ensureAlphaListClass(withoutInlineBadges);
+  return withoutInlineBadges;
 }
 
 function normalizeCmsHtml(html: string) {

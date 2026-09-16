@@ -73,8 +73,8 @@ const Footer = ({ topSponsors, otherSponsors }: Props) => {
 
             <div className="mt-6 space-y-1 text-sm text-[#c5c8c8]">
               <p>Caritas Zürich - KulturLegi Zürich</p>
-              <p>Reitergasse 1</p>
-              <p>8004 Zürich</p>
+              <p>Hohlstrasse 448</p>
+              <p>8048 Zürich</p>
               <p>044 366 68 48</p>
             </div>
           </div>

@@ -360,6 +360,7 @@ async function main() {
   await createM2OField(token, "kid", "wish", "wish", "kids");
   await ensureO2MField(token, "wish", "kids", "{{prename}} · {{age}} Jahre");
   await createM2OField(token, "kid", "donor", "donor", "kids");
+  await ensureO2MField(token, "donor", "kids", "{{prename}} · {{age}} Jahre");
 
   // donor
   for (const f of [

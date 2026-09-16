@@ -23,7 +23,7 @@ export const underlineTextLink = "cursor-pointer font-semibold text-caritas-gray
 export const cmsAlphaList = "cms-alpha-list";
 
 export const cmsBody =
-  "[&_p]:leading-relaxed [&_p]:text-caritas-gray-400 [&_li]:leading-relaxed [&_li]:text-caritas-gray-400 [&_span]:text-caritas-gray-400 [&_div]:text-caritas-gray-400 [&_ol]:mt-6 [&_ol]:list-[lower-alpha] [&_ol]:space-y-3 [&_ol]:pl-5 [&_ol]:text-base [&_ol]:leading-relaxed md:[&_ol]:pl-6 [&_ol]:marker:font-semibold [&_ol]:marker:text-caritas-gray-500";
+  "[&_p]:leading-relaxed [&_p]:text-caritas-gray-400 [&_li]:leading-relaxed [&_li]:text-caritas-gray-400 [&_span]:text-caritas-gray-400 [&_div]:text-caritas-gray-400 [&_ol]:mt-6 [&_ol]:list-decimal [&_ol]:space-y-3 [&_ol]:pl-6 [&_ol]:text-base [&_ol]:leading-relaxed md:[&_ol]:pl-7 [&_ol]:marker:font-semibold [&_ol]:marker:text-caritas-gray-500 [&_ul]:mt-6 [&_ul]:list-disc [&_ul]:space-y-3 [&_ul]:pl-6 [&_ul]:text-base [&_ul]:leading-relaxed md:[&_ul]:pl-7";
 
 export const kidTitle = "text-lg font-semibold text-gold-300";
 

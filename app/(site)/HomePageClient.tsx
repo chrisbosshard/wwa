@@ -112,6 +112,7 @@ export default function HomePageClient({ initialCampaignContent }: Props) {
 
       <div
         className={cn(
+          "relative z-10",
           showLowerContent ? "bg-caritas-gray-50" : "bg-white pt-6 md:pt-8",
           appState === "pre_registration" && "pt-10 md:pt-12",
         )}
