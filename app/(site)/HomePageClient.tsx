@@ -171,7 +171,7 @@ export default function HomePageClient({ initialCampaignContent }: Props) {
 
             <div className="grid grid-cols-auto-md gap-6">
               {filteredWishes.slice(0, showNumber).map((wish, index) => (
-                <Wish key={index} wish={wish} />
+                <Wish key={index} wish={wish} showDetails />
               ))}
             </div>
 

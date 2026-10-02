@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@elements/Button/Button";
+import { ProductInfoButton } from "@/components/Wish/ProductInfoButton";
 import { selectionGlow } from "@/lib/ui-classes";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { getWishProductUrl } from "@/lib/wish-link";
 import { isGrantedWish } from "@lib/directus/progress";
 
 const wishCardShell =
@@ -149,6 +151,7 @@ const Polaroid = (props) => {
 
   const isDone = false;
   const picture = kid.wish && kid.wish.image && kid.wish.image.url ? kid.wish.image.url : "/placeholder.jpg";
+  const productUrl = getWishProductUrl(kid.wish?.link);
 
   return (
     <>
@@ -203,6 +206,7 @@ const Polaroid = (props) => {
                     </Button>
                   </>
                 ) : null}
+                {productUrl ? <ProductInfoButton href={productUrl} /> : null}
                 {cart.includes(kid.id) && !isDone ? (
                   <Button onClick={handleRemove} color="outline" className="mx-0 w-full justify-center">
                     Aus Geschenkekorb entfernen
